@@ -99,19 +99,19 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
             if (firstChoice == null) {
                 GameTimer.start();
             }
-            a++;
-            showImage(iv);
-            if (turn == 1) {
+            if (turn == 2) {
                 timeWhenGameTimer2Stopped = GameTimer2.getBase() - SystemClock.elapsedRealtime();
                 GameTimer2.stop();
                 GameTimer.setBase(SystemClock.elapsedRealtime() + timeWhenGameTimer1Stopped);
                 GameTimer.start();
-            } else if (turn == 2) {
+            } else if (turn == 1) {
                 timeWhenGameTimer1Stopped = GameTimer.getBase() - SystemClock.elapsedRealtime();
                 GameTimer.stop();
                 GameTimer2.setBase(SystemClock.elapsedRealtime() + timeWhenGameTimer2Stopped);
                 GameTimer2.start();
             }
+            a++;
+            showImage(iv);
             if (a == 2) {
                 if (firstChoice.getContentDescription() == iv.getContentDescription()) {
                     showTick(firstChoice);
@@ -123,8 +123,8 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                     if (turn == 1) {
                         score.setTextColor(Color.GRAY);
                         score2.setTextColor(Color.BLACK);
-                        turn = 2;
                         b = scoreUpdatePlayer1();
+                        turn = 2;
                         if (b == 4) {
                             score.setText(R.string.completedSmileyPlayer1);
                             GameTimer.stop();
@@ -141,8 +141,8 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                     } else if (turn == 2){
                         score.setTextColor(Color.BLACK);
                         score2.setTextColor(Color.GRAY);
-                        turn = 1;
                         c = scoreUpdatePlayer2();
+                        turn = 1;
                         if (c == 4) {
                             score2.setText((R.string.completedSmileyPlayer2));
                             GameTimer2.stop();
