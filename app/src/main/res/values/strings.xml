@@ -11,4 +11,8 @@
     <string name="completedSmileyPlayer2">Player 2 WON! :)</string>
     <string name="pause_music">Pause Music</string>
     <string name="resume_music">Resume Music</string>
+    <string name="single_player">Single Player Game</string>
+    <string name="double_player">Double Player Game</string>
+    <string name="btn_fetch">Fetch</string>
+    <string name="hint">Enter a url</string>
 </resources>

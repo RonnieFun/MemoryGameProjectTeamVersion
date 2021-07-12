@@ -3,7 +3,9 @@ package com.example.ca;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,26 +18,33 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class LoadImagesActivity extends AppCompatActivity {
 
-    private Elements imagesDownload;
-    private Document website;
+    private Elements elements;
+    private Document document;
     private ProgressBar downloadProgressBar;
+    protected Thread bkgdThread;
     private TextView downloadProgressText;
     private TextView proceedToSingleGame;
     private TextView proceedToDoubleGame;
+    private EditText enteredUrl;
+    private List<String> srcList = new ArrayList<>();
     private final Collection<ImageView> selectedImages = new ArrayList<>();
-    private boolean buttonPressedAgain = false;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,77 +55,87 @@ public class LoadImagesActivity extends AppCompatActivity {
         Button getUrl = findViewById(R.id.FetchButton);
         getUrl.setOnClickListener((view) -> GetImagesFromUrl());
 
-        Intent intent = getIntent();
-        EditText enteredUrlRaw = findViewById(R.id.EnteredUrl);
-        enteredUrlRaw.setText(intent.getStringExtra("EnteredUrl"));
-
         downloadProgressText = findViewById(R.id.DownloadProgress);
+        enteredUrl = findViewById(R.id.EnteredUrl);
         proceedToSingleGame = findViewById(R.id.ProceedToSinglePlayerGame);
         proceedToDoubleGame = findViewById(R.id.ProceedToDoublePlayerGame);
-
+        downloadProgressBar = findViewById(R.id.DownloadProgressBar);
+        proceedToSingleGame = findViewById(R.id.ProceedToSinglePlayerGame);
+        proceedToDoubleGame = findViewById(R.id.ProceedToDoublePlayerGame);
         getUrl.bringToFront();
-        downloadProgressText.setText(R.string.awaitingUrlInput);
-        downloadProgressText.bringToFront();
-
-        if (intent.getStringExtra("EnteredUrl") != null) {
-            GetImagesFromUrl();
-        }
+//        downloadProgressText.setText(R.string.awaitingUrlInput);
+//        downloadProgressText.bringToFront();
     }
 
     @SuppressLint("SetTextI18n")
     public void GetImagesFromUrl() {
-        //set up alternate Fetch button
-        Button getUrlWhileScraping = findViewById(R.id.FetchButtonWhileScraping);
-        getUrlWhileScraping.setOnClickListener((view) -> fetchButtonPressedWhileLoadingImages());
-        getUrlWhileScraping.bringToFront();
-
-        //load placeholder images
-        ConstraintLayout loadImagesViewImages = findViewById(R.id.Images);
-        for (int i = 0; i < loadImagesViewImages.getChildCount(); i++) {
-            Picasso.get().load(R.drawable.x).fit().into((ImageView) loadImagesViewImages.getChildAt(i));
+        //check the user enter url and press fetch while downloading
+        if (bkgdThread != null) {
+            downloadProgressBar.setVisibility(View.INVISIBLE);
+            proceedToSingleGame.setVisibility(View.INVISIBLE);
+            proceedToDoubleGame.setVisibility(View.INVISIBLE);
+            downloadProgressBar.setProgress(0);
+            downloadProgressText.setText("Checking the website...");
         }
 
-        //scrape website and get images on new thread so main thread can load progress
-        new Thread(() -> {
-            {
-                //set up progress bar and status
-                downloadProgressBar = findViewById(R.id.DownloadProgressBar);
-                downloadProgressText.setText("Checking the website...");
-
-                hideKeyboard();
-                getWebsite();
-
-                //get images from website
-                imagesDownload = website.getElementsByTag("img");
-                int i = 1;
-                int j = 0;
-                while (i <= 20 && !buttonPressedAgain) {
-                    if (imagesDownload.get(j).attr("src") != null && imagesDownload.get(j).attr("src").contains("http")) {
-                        String a = "imageView" + i;
-                        int emptyImageId = getResources().getIdentifier(a, "id", getPackageName());
-                        ImageView emptyImage = findViewById(emptyImageId);
-                        insertImages(imagesDownload, i, j, emptyImage);
-                        setClickTrackerUsingMainThread(emptyImage);
-                        i++;
-                    }
-                    j++;
+        downloadProgressBar.setVisibility(View.VISIBLE);
+        bkgdThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                if (bkgdThread.isInterrupted()) {
+                    return;
                 }
+                //set up progress bar and status
+                downloadProgressText.setText("Checking the website...");
+                hideKeyboard();
+                //download data from url
+                downloadData();
+                if (bkgdThread.isInterrupted()) {
+                    return;
+                }
+                //bind data in UI
+                bindDataInUI();
             }
-        }).start();
+        };
+        bkgdThread.start();
     }
 
-    public void fetchButtonPressedWhileLoadingImages() {
-        //get entered url before closing current activity
-        EditText EnteredUrlRaw = findViewById(R.id.EnteredUrl);
-        String EnteredUrl = EnteredUrlRaw.getText().toString();
-
-        //to stop the loop in GetImagesFromUrl
-        buttonPressedAgain = true;
-
-        //redirect to "restart" activity
-        Intent intent = new Intent(this, LoadImagesActivity.class);
-        intent.putExtra("EnteredUrl", EnteredUrl);
-        startActivity(intent);
+    private void bindDataInUI() {
+        int i = 1;
+        for (String src : srcList) {
+            String a = "imageView" + i;
+            int emptyImageId = getResources().getIdentifier(a, "id", getPackageName());
+            ImageView emptyImage = findViewById(emptyImageId);
+            if (i == 11) {
+                try {
+                    bkgdThread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                bitmap = Glide.with(getBaseContext()).asBitmap().load(src).fitCenter().submit().get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            runOnUiThread(() -> {
+                //insertImages(imagesDownload, i, j, emptyImage,bitmap);
+                emptyImage.setImageBitmap(bitmap);
+                emptyImage.setContentDescription(src);
+                //increment progress bar and progress text
+                downloadProgressBar.incrementProgressBy(1);
+            });
+            if (i >= 20) {
+                downloadProgressText.setText(R.string.downloadCompleted6Images);
+            } else {
+                downloadProgressText.setText(getString(R.string.downloadingImageProgress, i));
+            }
+            setClickTrackerUsingMainThread(emptyImage);
+            i++;
+        }
     }
 
     public void hideKeyboard() {
@@ -124,11 +143,27 @@ public class LoadImagesActivity extends AppCompatActivity {
         imm.hideSoftInputFromWindow(findViewById(R.id.EnteredUrl).getWindowToken(), 0);
     }
 
-    public void getWebsite() {
-        EditText EnteredUrlRaw = findViewById(R.id.EnteredUrl);
-        String EnteredUrl = EnteredUrlRaw.getText().toString();
+    public void downloadData() {
+        String EnteredUrl = enteredUrl.getText().toString();
+        document = null;
+        elements = null;
         try {
-            website = Jsoup.connect(EnteredUrl).get();
+            int index = 0;
+            srcList.clear();
+            System.out.println(srcList.size());
+            document = Jsoup.connect(EnteredUrl).get();
+            elements = document.getElementsByTag("img");
+            for (Element element : elements) {
+                String imgSrc = element.attr("src");
+                if (imgSrc.contains(".jpg") || imgSrc.contains(".png")) {
+                    if (index >= 20) {
+                        break;
+                    } else {
+                        srcList.add(imgSrc);
+                        index++;
+                    }
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -140,29 +175,15 @@ public class LoadImagesActivity extends AppCompatActivity {
                         clickImage(iv)));
     }
 
-    public void insertImages(final Elements images, final int z, final int y,
-                             final ImageView emptyImageViews) {
-        runOnUiThread(() -> {
-            //set images
-            Picasso.get().load(images.get(y).attr("src")).fit().placeholder(R.drawable.x).into(emptyImageViews);
-            emptyImageViews.setContentDescription(images.get(y).attr("src"));
-
-            //increment progress bar and progress text
-            downloadProgressBar.incrementProgressBy(1);
-            if (z >= 20) {
-                downloadProgressText.setText(R.string.downloadCompleted6Images);
-            } else {
-                downloadProgressText.setText(getString(R.string.downloadingImageProgress, z));
-            }
-        });
-    }
-
     public void clickImage(ImageView iv) {
         //image not selected yet, <6 images selected
         if (!selectedImages.contains(iv) && selectedImages.size() < 6) {
             selectedImages.add(iv);
-            iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.chosen));
-
+            iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.tick));
+            downloadProgressBar.setVisibility(View.INVISIBLE);
+            downloadProgressText.setVisibility(View.INVISIBLE);
+            proceedToSingleGame.setVisibility(View.VISIBLE);
+            proceedToDoubleGame.setVisibility(View.VISIBLE);
             //6 images selected
             if (selectedImages.size() == 6) {
                 proceedToSingleGame.bringToFront();

@@ -132,6 +132,10 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
                     if (b == 6) {
                         score.setText(R.string.completedSmiley);
                         GameTimer.stop();
+                        ConstraintLayout imageConstraint = findViewById(R.id.gameinfoSingle);
+                        imageConstraint.setVisibility(View.INVISIBLE);
+                        ConstraintLayout btnConstraint = findViewById(R.id.btn_constraint);
+                        btnConstraint.setVisibility(View.INVISIBLE);
                         showCongratulations();
                         images.postDelayed(() -> startNewGame(), 5000);
                     }

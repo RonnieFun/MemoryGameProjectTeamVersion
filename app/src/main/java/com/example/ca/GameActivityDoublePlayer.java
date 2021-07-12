@@ -152,6 +152,10 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                         if (b == 4) {
                             score.setText(R.string.completedSmileyPlayer1);
                             GameTimer.stop();
+                            ConstraintLayout imageConstraint = findViewById(R.id.gameinfoDouble);
+                            imageConstraint.setVisibility(View.INVISIBLE);
+                            ConstraintLayout btnConstraint = findViewById(R.id.btn_constraint);
+                            btnConstraint.setVisibility(View.INVISIBLE);
                             showCongratulationsPlayer1();
                             images.postDelayed(() -> startNewGame(), 5000);
                         }
@@ -174,8 +178,13 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                         if (c == 4) {
                             score2.setText((R.string.completedSmileyPlayer2));
                             GameTimer2.stop();
-                            showCongratulationsPlayer2();;
-                            images.postDelayed(() -> startNewGame(),5000);
+                            ConstraintLayout imageConstraint = findViewById(R.id.gameinfoDouble);
+                            imageConstraint.setVisibility(View.INVISIBLE);
+                            ConstraintLayout btnConstraint = findViewById(R.id.btn_constraint);
+                            btnConstraint.setVisibility(View.INVISIBLE);
+                            showCongratulationsPlayer2();
+                            ;
+                            images.postDelayed(() -> startNewGame(), 5000);
                         }
                         if (player1Score == 3 && player2Score == 3) {
                             GameTimer.stop();
