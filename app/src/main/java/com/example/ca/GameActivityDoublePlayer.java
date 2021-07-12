@@ -303,6 +303,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     public void startNewGame() {
         Intent intent = new Intent(this, LoadImagesActivity.class);
         startActivity(intent);
+        mediaPlayer.stop();
     }
 
     //Pause Music
