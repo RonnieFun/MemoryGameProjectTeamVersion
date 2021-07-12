@@ -9,4 +9,6 @@
     <string name="completedSmiley">COMPLETED! :)</string>
     <string name="completedSmileyPlayer1">Player 1 WON! :)</string>
     <string name="completedSmileyPlayer2">Player 2 WON! :)</string>
+    <string name="pause_music">Pause Music</string>
+    <string name="resume_music">Resume Music</string>
 </resources>

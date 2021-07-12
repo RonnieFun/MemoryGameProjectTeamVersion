@@ -6,10 +6,12 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,12 +29,38 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
     private SoundPool soundPool;
     private int sound1, sound2, sound3;
     ImageView firstChoice;
+    private MediaPlayer mediaPlayer;
+    private Button pauseButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gameboardsingle);
 
+        //Instantiate mediaplayer for mario background music
+        //mario medley song mp3 file downloaded from
+        //https://play.nintendo.com/printables/uncategorized/exclusive-download-super-mario-bros-song/
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer = MediaPlayer.create(GameActivitySinglePlayer.this, R.raw.super_mario_medley);
+        //Loop the music
+        mediaPlayer.setLooping(true);
+
+        //Start playing the music automatically upon launch of activity
+        mediaPlayer.start();
+
+        pauseButton = findViewById(R.id.pauseButtonSingle);
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlayer.isPlaying()) {
+                    pauseMusic();
+                } else {
+                    resumeMusic();
+                }
+            }
+        });
+
+        //Instantiate soundpool for soundeffects
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
@@ -42,6 +70,7 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
                 .setAudioAttributes(audioAttributes)
                 .build();
 
+        // Sound effect mp3 files downloaded from www.zapsplat.com
         sound1 = soundPool.load(this,R.raw.correct, 1);
         sound2 = soundPool.load(this,R.raw.incorrect, 1);
         sound3 = soundPool.load(this, R.raw.completion, 1);
@@ -177,6 +206,23 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
     public void startNewGame() {
         Intent intent = new Intent(this, LoadImagesActivity.class);
         startActivity(intent);
+        mediaPlayer.stop();
+    }
+
+    //Pause Music
+    public void pauseMusic() {
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
+            pauseButton.setText(R.string.resume_music);
+        }
+    }
+
+    //Resume Music
+    public void resumeMusic() {
+        if (mediaPlayer != null) {
+            mediaPlayer.start();
+            pauseButton.setText(R.string.pause_music);
+        }
     }
 
     @Override
@@ -185,6 +231,10 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
         if (soundPool != null) {
             soundPool.release();
             soundPool = null;
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
+            mediaPlayer.release();
         }
     }
 }
