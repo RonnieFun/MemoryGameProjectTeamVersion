@@ -27,6 +27,8 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     int player1Score = 0;
     int player2Score = 0;
     int turn = 1;
+    long timeWhenGameTimer1Stopped = 0;
+    long timeWhenGameTimer2Stopped = 0;
     private SoundPool soundPool;
     private int sound1, sound2, sound3;
     ImageView firstChoice;
@@ -100,10 +102,14 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
             a++;
             showImage(iv);
             if (turn == 1) {
+                timeWhenGameTimer2Stopped = GameTimer2.getBase() - SystemClock.elapsedRealtime();
                 GameTimer2.stop();
+                GameTimer.setBase(SystemClock.elapsedRealtime() + timeWhenGameTimer1Stopped);
                 GameTimer.start();
             } else if (turn == 2) {
+                timeWhenGameTimer1Stopped = GameTimer.getBase() - SystemClock.elapsedRealtime();
                 GameTimer.stop();
+                GameTimer2.setBase(SystemClock.elapsedRealtime() + timeWhenGameTimer2Stopped);
                 GameTimer2.start();
             }
             if (a == 2) {
