@@ -154,7 +154,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                             GameTimer.stop();
                             ConstraintLayout imageConstraint = findViewById(R.id.gameinfoDouble);
                             imageConstraint.setVisibility(View.INVISIBLE);
-                            ConstraintLayout btnConstraint = findViewById(R.id.btn_constraint);
+                            ConstraintLayout btnConstraint = findViewById(R.id.btn_constraintDouble);
                             btnConstraint.setVisibility(View.INVISIBLE);
                             showCongratulationsPlayer1();
                             images.postDelayed(() -> startNewGame(), 5000);
@@ -180,10 +180,9 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                             GameTimer2.stop();
                             ConstraintLayout imageConstraint = findViewById(R.id.gameinfoDouble);
                             imageConstraint.setVisibility(View.INVISIBLE);
-                            ConstraintLayout btnConstraint = findViewById(R.id.btn_constraint);
+                            ConstraintLayout btnConstraint = findViewById(R.id.btn_constraintDouble);
                             btnConstraint.setVisibility(View.INVISIBLE);
                             showCongratulationsPlayer2();
-                            ;
                             images.postDelayed(() -> startNewGame(), 5000);
                         }
                         if (player1Score == 3 && player2Score == 3) {
