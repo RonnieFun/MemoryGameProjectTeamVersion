@@ -99,17 +99,6 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
             if (firstChoice == null) {
                 GameTimer.start();
             }
-            if (turn == 2) {
-                timeWhenGameTimer2Stopped = GameTimer2.getBase() - SystemClock.elapsedRealtime();
-                GameTimer2.stop();
-                GameTimer.setBase(SystemClock.elapsedRealtime() + timeWhenGameTimer1Stopped);
-                GameTimer.start();
-            } else if (turn == 1) {
-                timeWhenGameTimer1Stopped = GameTimer.getBase() - SystemClock.elapsedRealtime();
-                GameTimer.stop();
-                GameTimer2.setBase(SystemClock.elapsedRealtime() + timeWhenGameTimer2Stopped);
-                GameTimer2.start();
-            }
             a++;
             showImage(iv);
             if (a == 2) {
@@ -125,6 +114,10 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                         score2.setTextColor(Color.BLACK);
                         b = scoreUpdatePlayer1();
                         turn = 2;
+                        timeWhenGameTimer1Stopped = GameTimer.getBase() - SystemClock.elapsedRealtime();
+                        GameTimer.stop();
+                        GameTimer2.setBase(SystemClock.elapsedRealtime() + timeWhenGameTimer2Stopped);
+                        GameTimer2.start();
                         if (b == 4) {
                             score.setText(R.string.completedSmileyPlayer1);
                             GameTimer.stop();
@@ -143,6 +136,10 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                         score2.setTextColor(Color.GRAY);
                         c = scoreUpdatePlayer2();
                         turn = 1;
+                        timeWhenGameTimer2Stopped = GameTimer2.getBase() - SystemClock.elapsedRealtime();
+                        GameTimer2.stop();
+                        GameTimer.setBase(SystemClock.elapsedRealtime() + timeWhenGameTimer1Stopped);
+                        GameTimer.start();
                         if (c == 4) {
                             score2.setText((R.string.completedSmileyPlayer2));
                             GameTimer2.stop();
@@ -155,6 +152,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                             showDrawGame();
                             images.postDelayed(() -> startNewGame(),5000);
                         }
+
                     }
 
                 } else {
@@ -162,15 +160,23 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                     showCross(iv);
                     disableImageSelection();
                     images.postDelayed(() ->
-                            enableImageSelection(firstChoice, iv), 1000);
+                            enableImageSelection(firstChoice, iv), 500);
                     if (turn == 1) {
                         score.setTextColor(Color.GRAY);
                         score2.setTextColor(Color.BLACK);
                         turn = 2;
+                        timeWhenGameTimer1Stopped = GameTimer.getBase() - SystemClock.elapsedRealtime();
+                        GameTimer.stop();
+                        GameTimer2.setBase(SystemClock.elapsedRealtime() + timeWhenGameTimer2Stopped);
+                        GameTimer2.start();
                     } else if (turn == 2) {
                         score.setTextColor(Color.BLACK);
                         score2.setTextColor(Color.GRAY);
                         turn = 1;
+                        timeWhenGameTimer2Stopped = GameTimer2.getBase() - SystemClock.elapsedRealtime();
+                        GameTimer2.stop();
+                        GameTimer.setBase(SystemClock.elapsedRealtime() + timeWhenGameTimer1Stopped);
+                        GameTimer.start();
                     }
                 }
                 a = 0;
