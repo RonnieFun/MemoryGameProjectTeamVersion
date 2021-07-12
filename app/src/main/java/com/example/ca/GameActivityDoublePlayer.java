@@ -48,7 +48,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
         mediaPlayer = new MediaPlayer();
         mediaPlayer = MediaPlayer.create(GameActivityDoublePlayer.this, R.raw.super_mario_medley);
 
-        mediaPlayer.setVolume(0.05f, 0.05f);
+        mediaPlayer.setVolume(0.5f, 0.5f);
         //Loop the music
         mediaPlayer.setLooping(true);
 
