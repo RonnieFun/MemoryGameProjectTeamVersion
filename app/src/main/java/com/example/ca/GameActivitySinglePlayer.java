@@ -42,6 +42,8 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
         //https://play.nintendo.com/printables/uncategorized/exclusive-download-super-mario-bros-song/
         mediaPlayer = new MediaPlayer();
         mediaPlayer = MediaPlayer.create(GameActivitySinglePlayer.this, R.raw.super_mario_medley);
+
+        mediaPlayer.setVolume(0.05f, 0.05f);
         //Loop the music
         mediaPlayer.setLooping(true);
 
