@@ -180,12 +180,12 @@ public class LoadImagesActivity extends AppCompatActivity {
         if (!selectedImages.contains(iv) && selectedImages.size() < 6) {
             selectedImages.add(iv);
             iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.tick));
-            downloadProgressBar.setVisibility(View.INVISIBLE);
-            downloadProgressText.setVisibility(View.INVISIBLE);
-            proceedToSingleGame.setVisibility(View.VISIBLE);
-            proceedToDoubleGame.setVisibility(View.VISIBLE);
             //6 images selected
             if (selectedImages.size() == 6) {
+                downloadProgressBar.setVisibility(View.INVISIBLE);
+                downloadProgressText.setVisibility(View.INVISIBLE);
+                proceedToSingleGame.setVisibility(View.VISIBLE);
+                proceedToDoubleGame.setVisibility(View.VISIBLE);
                 proceedToSingleGame.bringToFront();
                 proceedToDoubleGame.bringToFront();
                 proceedToSingleGame.setOnClickListener(view -> goToSingleGame(selectedImages));

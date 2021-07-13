@@ -152,10 +152,6 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                         if (b == 4) {
                             score.setText(R.string.completedSmileyPlayer1);
                             GameTimer.stop();
-                            ConstraintLayout imageConstraint = findViewById(R.id.gameinfoDouble);
-                            imageConstraint.setVisibility(View.INVISIBLE);
-                            ConstraintLayout btnConstraint = findViewById(R.id.btn_constraintDouble);
-                            btnConstraint.setVisibility(View.INVISIBLE);
                             showCongratulationsPlayer1();
                             images.postDelayed(() -> startNewGame(), 5000);
                         }
@@ -178,10 +174,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                         if (c == 4) {
                             score2.setText((R.string.completedSmileyPlayer2));
                             GameTimer2.stop();
-                            ConstraintLayout imageConstraint = findViewById(R.id.gameinfoDouble);
-                            imageConstraint.setVisibility(View.INVISIBLE);
-                            ConstraintLayout btnConstraint = findViewById(R.id.btn_constraintDouble);
-                            btnConstraint.setVisibility(View.INVISIBLE);
+                            setUIVisibility();
                             showCongratulationsPlayer2();
                             images.postDelayed(() -> startNewGame(), 5000);
                         }
@@ -225,6 +218,15 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                 firstChoice.setEnabled(false);
             }
         }
+    }
+
+    private void setUIVisibility() {
+        ConstraintLayout scoreConstraint = findViewById(R.id.gameinfoDouble);
+        scoreConstraint.setVisibility(View.INVISIBLE);
+        ConstraintLayout btnConstraint = findViewById(R.id.btn_constraintDouble);
+        btnConstraint.setVisibility(View.INVISIBLE);
+        ConstraintLayout imageConstraint = findViewById(R.id.images);
+        imageConstraint.setVisibility(View.INVISIBLE);
     }
 
     public void showImage(ImageView iv) {
@@ -282,6 +284,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     }
 
     public void showCongratulationsPlayer1() {
+        setUIVisibility();
         LinearLayout winGame1 = findViewById(R.id.Player1WinGame);
         winGame1.bringToFront();
         Chronometer countDownToMainMenu = findViewById(R.id.TimeToNewGame1);
@@ -291,6 +294,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     }
 
     public void showCongratulationsPlayer2() {
+        setUIVisibility();
         LinearLayout winGame2 = findViewById(R.id.Player2WinGame);
         winGame2.bringToFront();
         Chronometer countDownToMainMenu = findViewById(R.id.TimeToNewGame2);
@@ -300,6 +304,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     }
 
     public void showDrawGame() {
+        setUIVisibility();
         LinearLayout drawnGame = findViewById(R.id.DrawnGame);
         drawnGame.bringToFront();
         Chronometer countDownToMainMenu = findViewById(R.id.TimeToNewGame3);
