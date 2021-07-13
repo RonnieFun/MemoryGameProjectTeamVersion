@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
     }
 
     public void loadImagesForGame(String imageUrl, ImageView iv) {
-        Picasso.get().load(imageUrl).fit().into(iv);
+        Glide.with(this).load(imageUrl).into(iv);
         iv.setContentDescription(imageUrl);
         iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.x));
         iv.setOnClickListener(view -> chooseImage(iv));

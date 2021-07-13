@@ -115,7 +115,7 @@ public class LoadImagesActivity extends AppCompatActivity {
                 }
             }
             try {
-                bitmap = Glide.with(getBaseContext()).asBitmap().load(src).fitCenter().submit().get();
+                bitmap = Glide.with(getBaseContext()).asBitmap().load(src).submit().get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {

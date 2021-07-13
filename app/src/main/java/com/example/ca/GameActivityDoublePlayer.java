@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     }
 
     public void loadImagesForGame(String imageUrl, ImageView iv) {
-        Picasso.get().load(imageUrl).fit().into(iv);
+        Glide.with(this).load(imageUrl).into(iv);
         iv.setContentDescription(imageUrl);
         iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.x));
         iv.setOnClickListener(view -> chooseImage(iv));
