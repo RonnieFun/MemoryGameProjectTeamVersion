@@ -153,12 +153,14 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                         if (b == 4) {
                             score.setText(R.string.completedSmileyPlayer1);
                             GameTimer.stop();
+                            setUIVisibility();
                             showCongratulationsPlayer1();
                             images.postDelayed(() -> startNewGame(), 5000);
                         }
                         if (player1Score == 3 && player2Score == 3) {
                             GameTimer.stop();
                             GameTimer2.stop();
+                            setUIVisibility();
                             showDrawGame();
                             images.postDelayed(() -> startNewGame(),5000);
                         }
@@ -182,6 +184,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                         if (player1Score == 3 && player2Score == 3) {
                             GameTimer.stop();
                             GameTimer2.stop();
+                            setUIVisibility();
                             showDrawGame();
                             images.postDelayed(() -> startNewGame(),5000);
                         }
@@ -287,30 +290,42 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     public void showCongratulationsPlayer1() {
         setUIVisibility();
         LinearLayout winGame1 = findViewById(R.id.Player1WinGame);
+        LinearLayout winGame2 = findViewById(R.id.Player2WinGame);
+        LinearLayout drawnGame = findViewById(R.id.DrawnGame);
+        drawnGame.setVisibility(View.INVISIBLE);
+        winGame2.setVisibility(View.INVISIBLE);
         winGame1.bringToFront();
         Chronometer countDownToMainMenu = findViewById(R.id.TimeToNewGame1);
         soundPool.play(sound3, 1, 1, 0,0,1);
-        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5000);
+        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5500);
         countDownToMainMenu.start();
     }
 
     public void showCongratulationsPlayer2() {
         setUIVisibility();
         LinearLayout winGame2 = findViewById(R.id.Player2WinGame);
+        LinearLayout winGame1 = findViewById(R.id.Player1WinGame);
+        LinearLayout drawnGame = findViewById(R.id.DrawnGame);
+        drawnGame.setVisibility(View.INVISIBLE);
+        winGame1.setVisibility(View.INVISIBLE);
         winGame2.bringToFront();
         Chronometer countDownToMainMenu = findViewById(R.id.TimeToNewGame2);
         soundPool.play(sound3, 1, 1, 0,0,1);
-        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5000);
+        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5500);
         countDownToMainMenu.start();
     }
 
     public void showDrawGame() {
         setUIVisibility();
         LinearLayout drawnGame = findViewById(R.id.DrawnGame);
+        LinearLayout winGame2 = findViewById(R.id.Player2WinGame);
+        LinearLayout winGame1 = findViewById(R.id.Player1WinGame);
+        winGame1.setVisibility(View.INVISIBLE);
+        winGame2.setVisibility(View.INVISIBLE);
         drawnGame.bringToFront();
         Chronometer countDownToMainMenu = findViewById(R.id.TimeToNewGame3);
         soundPool.play(sound3, 1, 1, 0,0,1);
-        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5000);
+        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5500);
         countDownToMainMenu.start();
     }
 
