@@ -209,7 +209,7 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
         winGame.bringToFront();
         Chronometer countDownToMainMenu = findViewById(R.id.TimeToNewGame);
         soundPool.play(sound3, 1, 1, 0,0,1);
-        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5000);
+        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5500);
         countDownToMainMenu.start();
     }
 
