@@ -73,11 +73,13 @@ public class LoadImagesActivity extends AppCompatActivity {
             proceedToSingleGame.setVisibility(View.INVISIBLE);
             proceedToDoubleGame.setVisibility(View.INVISIBLE);
             downloadProgressBar.setProgress(0);
+            downloadProgressText.setVisibility(View.VISIBLE);
             downloadProgressText.setText("Checking the website...");
-
+            selectedImages.clear();
             ConstraintLayout loadImagesViewImages = findViewById(R.id.Images);
             for (int i = 0; i < loadImagesViewImages.getChildCount(); i++) {
                 Glide.with(this).load(R.drawable.x).into((ImageView) loadImagesViewImages.getChildAt(i));
+                loadImagesViewImages.getChildAt(i).setForeground(null);
             }
         }
 
