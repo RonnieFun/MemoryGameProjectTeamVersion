@@ -44,7 +44,6 @@ public class LoadImagesActivity extends AppCompatActivity {
     private EditText enteredUrl;
     private List<String> srcList = new ArrayList<>();
     private final Collection<ImageView> selectedImages = new ArrayList<>();
-    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,19 +62,23 @@ public class LoadImagesActivity extends AppCompatActivity {
         proceedToSingleGame = findViewById(R.id.ProceedToSinglePlayerGame);
         proceedToDoubleGame = findViewById(R.id.ProceedToDoublePlayerGame);
         getUrl.bringToFront();
-//        downloadProgressText.setText(R.string.awaitingUrlInput);
-//        downloadProgressText.bringToFront();
     }
 
     @SuppressLint("SetTextI18n")
     public void GetImagesFromUrl() {
         //check the user enter url and press fetch while downloading
         if (bkgdThread != null) {
+            bkgdThread.interrupt();
             downloadProgressBar.setVisibility(View.INVISIBLE);
             proceedToSingleGame.setVisibility(View.INVISIBLE);
             proceedToDoubleGame.setVisibility(View.INVISIBLE);
             downloadProgressBar.setProgress(0);
             downloadProgressText.setText("Checking the website...");
+
+            ConstraintLayout loadImagesViewImages = findViewById(R.id.Images);
+            for (int i = 0; i < loadImagesViewImages.getChildCount(); i++) {
+                Glide.with(this).load(R.drawable.x).into((ImageView) loadImagesViewImages.getChildAt(i));
+            }
         }
 
         downloadProgressBar.setVisibility(View.VISIBLE);
@@ -91,9 +94,6 @@ public class LoadImagesActivity extends AppCompatActivity {
                 hideKeyboard();
                 //download data from url
                 downloadData();
-                if (bkgdThread.isInterrupted()) {
-                    return;
-                }
                 //bind data in UI
                 bindDataInUI();
             }
@@ -103,39 +103,44 @@ public class LoadImagesActivity extends AppCompatActivity {
 
     private void bindDataInUI() {
         int i = 1;
-        for (String src : srcList) {
-            String a = "imageView" + i;
-            int emptyImageId = getResources().getIdentifier(a, "id", getPackageName());
-            ImageView emptyImage = findViewById(emptyImageId);
-            if (i == 11) {
+        if (srcList.size() > 0) {
+            for (String src : srcList) {
+                String a = "imageView" + i;
+                Bitmap bitmap = null;
+                int emptyImageId = getResources().getIdentifier(a, "id", getPackageName());
+                ImageView emptyImage = findViewById(emptyImageId);
+                if (i == 11) {
+                    try {
+                        bkgdThread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 try {
-                    bkgdThread.sleep(5000);
+                    bitmap = Glide.with(getBaseContext()).asBitmap().load(src).submit().get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                Bitmap finalBitmap = bitmap;
+                runOnUiThread(() -> {
+                    //insertImages(imagesDownload, i, j, emptyImage,bitmap);
+                    emptyImage.setImageBitmap(finalBitmap);
+                    emptyImage.setContentDescription(src);
+                    //increment progress bar and progress text
+                    downloadProgressBar.incrementProgressBy(1);
+                });
+                if (i >= 20) {
+                    downloadProgressText.setText(R.string.downloadCompleted6Images);
+                } else {
+                    downloadProgressText.setText(getString(R.string.downloadingImageProgress, i));
+                }
+                setClickTrackerUsingMainThread(emptyImage);
+                i++;
             }
-            try {
-                bitmap = Glide.with(getBaseContext()).asBitmap().load(src).submit().get();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            runOnUiThread(() -> {
-                //insertImages(imagesDownload, i, j, emptyImage,bitmap);
-                emptyImage.setImageBitmap(bitmap);
-                emptyImage.setContentDescription(src);
-                //increment progress bar and progress text
-                downloadProgressBar.incrementProgressBy(1);
-            });
-            if (i >= 20) {
-                downloadProgressText.setText(R.string.downloadCompleted6Images);
-            } else {
-                downloadProgressText.setText(getString(R.string.downloadingImageProgress, i));
-            }
-            setClickTrackerUsingMainThread(emptyImage);
-            i++;
         }
+
     }
 
     public void hideKeyboard() {
@@ -147,10 +152,9 @@ public class LoadImagesActivity extends AppCompatActivity {
         String EnteredUrl = enteredUrl.getText().toString();
         document = null;
         elements = null;
+        srcList.clear();
         try {
             int index = 0;
-            srcList.clear();
-            System.out.println(srcList.size());
             document = Jsoup.connect(EnteredUrl).get();
             elements = document.getElementsByTag("img");
             for (Element element : elements) {
