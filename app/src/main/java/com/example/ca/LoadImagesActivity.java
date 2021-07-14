@@ -109,13 +109,6 @@ public class LoadImagesActivity extends AppCompatActivity {
                 Bitmap bitmap = null;
                 int emptyImageId = getResources().getIdentifier(a, "id", getPackageName());
                 ImageView emptyImage = findViewById(emptyImageId);
-                if (i == 11) {
-                    try {
-                        bkgdThread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
                 try {
                     bitmap = Glide.with(getBaseContext()).asBitmap().load(src).submit().get();
                 } catch (ExecutionException e) {
