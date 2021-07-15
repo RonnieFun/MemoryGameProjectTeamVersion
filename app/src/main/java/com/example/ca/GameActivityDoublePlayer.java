@@ -101,7 +101,6 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
         drawnGame.setVisibility(View.INVISIBLE);
         LinearLayout gameImages = findViewById(R.id.GameImages);
         ScrollView scrollView = findViewById(R.id.GameImagesScrollView);
-        scrollView.bringToFront();
         winningScore = numberOfGameImages / 2 + 1;
 
         //put urls + duplicate in new list
@@ -131,8 +130,8 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
             for (int b = 0; b < numberOfColumns; b++) {
                 ImageView imageView = new ImageView(this);
                 LinearLayout.LayoutParams lpForImages = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
-                lpForImages.weight = 1;
-                lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.16);
+                lpForImages.height = (this.getResources().getDisplayMetrics().widthPixels)/3;
+                lpForImages.width = (this.getResources().getDisplayMetrics().widthPixels)/3;
                 imageView.setLayoutParams(lpForImages);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 linearLayout.addView(imageView);
