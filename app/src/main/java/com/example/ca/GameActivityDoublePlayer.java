@@ -132,7 +132,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
                 ImageView imageView = new ImageView(this);
                 LinearLayout.LayoutParams lpForImages = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
                 lpForImages.weight = 1;
-                lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.18);
+                lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.16);
                 imageView.setLayoutParams(lpForImages);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 linearLayout.addView(imageView);
