@@ -13,7 +13,6 @@
         android:fadeScrollbars="true"
         android:fillViewport="true"
         android:paddingBottom="50dp"
-        android:background="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -164,7 +163,7 @@
             android:text="Player1"
             android:textColor="#000000"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/Score2"
+            app:layout_constraintBottom_toTopOf="@id/Score2"
             app:layout_constraintHorizontal_weight="0.7"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/TimeElapsed"
@@ -184,8 +183,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_weight="0.7"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/TimeElapsed"
-            app:layout_constraintTop_toBottomOf="@+id/Score" />
+            app:layout_constraintRight_toLeftOf="@id/TimeElapsed2"
+            app:layout_constraintTop_toBottomOf="@id/Score" />
 
         <Chronometer
             android:id="@+id/TimeElapsed"
@@ -196,7 +195,7 @@
             android:gravity="left|center_vertical"
             android:textColor="@color/black"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/TimeElapsed2"
+            app:layout_constraintBottom_toTopOf="@id/TimeElapsed2"
             app:layout_constraintHorizontal_weight="0.3"
             app:layout_constraintLeft_toRightOf="@id/Score"
             app:layout_constraintRight_toRightOf="parent"
@@ -213,9 +212,9 @@
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_weight="0.3"
-            app:layout_constraintLeft_toRightOf="@id/Score"
+            app:layout_constraintLeft_toRightOf="@id/Score2"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/TimeElapsed" />
+            app:layout_constraintTop_toBottomOf="@id/TimeElapsed" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
