@@ -242,6 +242,7 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
     }
 
     public void showCongratulations() {
+        mediaPlayer.stop();
         ConstraintLayout scoreConstraint = findViewById(R.id.gameinfoSingle);
         scoreConstraint.setVisibility(View.INVISIBLE);
         ConstraintLayout btnConstraint = findViewById(R.id.btn_constraint);
@@ -260,7 +261,6 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
     public void startNewGame() {
         Intent intent = new Intent(this, LoadImagesActivity.class);
         startActivity(intent);
-        mediaPlayer.stop();
     }
 
     //Pause Music

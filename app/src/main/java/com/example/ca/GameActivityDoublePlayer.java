@@ -328,6 +328,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     }
 
     public void showCongratulationsPlayer1() {
+        mediaPlayer.stop();
         setUIVisibility();
         LinearLayout winGame1 = findViewById(R.id.Player1WinGame);
         LinearLayout winGame2 = findViewById(R.id.Player2WinGame);
@@ -343,6 +344,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     }
 
     public void showCongratulationsPlayer2() {
+        mediaPlayer.stop();
         setUIVisibility();
         LinearLayout winGame2 = findViewById(R.id.Player2WinGame);
         LinearLayout winGame1 = findViewById(R.id.Player1WinGame);
@@ -358,6 +360,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     }
 
     public void showDrawGame() {
+        mediaPlayer.stop();
         setUIVisibility();
         LinearLayout drawnGame = findViewById(R.id.DrawnGame);
         LinearLayout winGame2 = findViewById(R.id.Player2WinGame);
@@ -375,7 +378,6 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     public void startNewGame() {
         Intent intent = new Intent(this, LoadImagesActivity.class);
         startActivity(intent);
-        mediaPlayer.stop();
     }
 
     //Pause Music
