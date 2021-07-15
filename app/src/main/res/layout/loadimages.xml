@@ -38,42 +38,29 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintHorizontal_weight="3.75"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/FetchButtons"
+            app:layout_constraintRight_toLeftOf="@id/FetchButton"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.9"
             tools:ignore="TextFields" />
 
-        <FrameLayout
-            android:id="@+id/FetchButtons"
+        <Button
+            android:id="@+id/FetchButton"
             android:layout_width="0dp"
             android:layout_height="40dp"
+            android:background="@drawable/rectangle_border"
+            android:backgroundTint="@color/purple_500"
+            android:scaleX="0.95"
+            android:text="@string/btn_fetch"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textScaleX="1.05"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_weight="1.25"
             app:layout_constraintLeft_toRightOf="@id/EnteredUrl"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.9">
-
-            <Button
-                android:id="@+id/FetchButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/rectangle_border"
-                android:backgroundTint="@color/purple_500"
-                android:scaleX="0.95"
-                android:text="@string/btn_fetch"
-                android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:textScaleX="1.05"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_weight="1.25"
-                app:layout_constraintLeft_toRightOf="@id/EnteredUrl"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.9" />
-
-        </FrameLayout>
+            app:layout_constraintVertical_bias="0.9" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -81,14 +68,14 @@
         android:id="@+id/ImagesScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:fadeScrollbars="false"
+        android:fadeScrollbars="true"
         android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@id/DownloadProgressBar"
         app:layout_constraintTop_toBottomOf="@id/UrlEntering"
         app:layout_constraintVertical_weight="7">
 
         <LinearLayout
-            android:id="@+id/Images"
+            android:id="@+id/AllImages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />
@@ -101,7 +88,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/rectangle_border"
-        android:max="20"
         android:maxHeight="50dp"
         android:minHeight="50dp"
         android:paddingHorizontal="2dp"
@@ -136,35 +122,34 @@
             android:textColor="#000000"
             app:layout_constraintVertical_weight="0.75" />
 
-        <TextView
-            android:id="@+id/ProceedToDoublePlayerGame"
-            android:layout_width="190dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal|end"
-            android:background="@color/purple_500"
-            android:gravity="center_horizontal"
-            android:text="@string/double_player"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:visibility="invisible"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            app:layout_constraintVertical_weight="0.75" />
-
-        <TextView
-            android:id="@+id/ProceedToSinglePlayerGame"
-            android:layout_width="190dp"
-            android:layout_height="match_parent"
-            android:background="@color/purple_500"
-            android:gravity="center_horizontal"
-            android:text="@string/single_player"
-            android:layout_marginStart="10dp"
-            android:layout_marginBottom="10dp"
-            android:visibility="invisible"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            app:layout_constraintVertical_weight="0.75" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/ProceedToSinglePlayerGame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/black"
+                android:background="@color/purple_500"
+                android:visibility="invisible"
+                android:text="@string/single_player" />
+            <Button
+                android:id="@+id/ProceedToDoublePlayerGame"
+                android:layout_width="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/black"
+                android:visibility="invisible"
+                android:background="@color/purple_500"
+                android:text="@string/double_player" />
+        </LinearLayout>
 
     </FrameLayout>
 

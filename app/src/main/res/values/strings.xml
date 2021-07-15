@@ -2,10 +2,10 @@
     <string name="app_name">CA</string>
     <string name="awaitingUrlInput">Awaiting url input</string>
     <string name="downloadCompletedXImages">Download completed. Please select %1$d images</string>
-    <string name="downloadingImageProgress">\"Downloading images %1$d of 20 \"</string>
-    <string name="currentScore">Current score:\n%1$d of 6 matches</string>
-    <string name="currentScoreP1">Current score for P1:\n%1$d of 4 matches</string>
-    <string name="currentScoreP2">Current score for P2:\n%1$d of 4 matches</string>
+    <string name="downloadingImageProgress">Downloading images %1$d of %2$d</string>
+    <string name="currentScore">Current score:\n%1$d of %2$d matches</string>
+    <string name="currentScoreP1">Current score for P1:\n%1$d of %2$d matches</string>
+    <string name="currentScoreP2">Current score for P2:\n%1$d of %2$d matches</string>
     <string name="completedSmiley">COMPLETED! :)</string>
     <string name="completedSmileyPlayer1">Player 1 WON! :)</string>
     <string name="completedSmileyPlayer2">Player 2 WON! :)</string>
@@ -15,4 +15,6 @@
     <string name="double_player">Double Player Game</string>
     <string name="btn_fetch">Fetch</string>
     <string name="hint">Enter a url</string>
+    <string name="checkingWebsite">Checking the website...</string>
+    <string name="selectedImages">%1$d of %2$d images selected</string>
 </resources>
