@@ -101,7 +101,6 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
         drawnGame.setVisibility(View.INVISIBLE);
         LinearLayout gameImages = findViewById(R.id.GameImages);
         ScrollView scrollView = findViewById(R.id.GameImagesScrollView);
-        scrollView.bringToFront();
         winningScore = numberOfGameImages / 2 + 1;
 
         //put urls + duplicate in new list
