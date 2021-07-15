@@ -1,11 +1,13 @@
 package com.example.ca;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.bumptech.glide.Glide;
-
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +92,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
 
         //get selected images from LoadImagesActivity explicit intent
         Intent intent = getIntent();
-        List<String> ChosenImagesUrls = intent.getStringArrayListExtra("SelectedImagesUrls2");
+        List<String> ChosenImagesUris = intent.getStringArrayListExtra("SelectedImagesUris2");
         numberOfGameImages = intent.getIntExtra("numberOfGameImages", 0);
         numberOfRows = (int) Math.ceil((double) numberOfGameImages * 2 / (double) numberOfColumns);
         LinearLayout drawnGame = findViewById(R.id.DrawnGame);
@@ -104,14 +106,16 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
         winningScore = numberOfGameImages / 2 + 1;
 
         //put urls + duplicate in new list
-        List<String> GameImageUrls = new ArrayList<>();
-        if (ChosenImagesUrls != null) {
-            GameImageUrls.addAll(ChosenImagesUrls);
-            GameImageUrls.addAll(ChosenImagesUrls);
+        List<String> GameImageUris = new ArrayList<>();
+        if (ChosenImagesUris != null) {
+            for (String imageUri: ChosenImagesUris) {
+                GameImageUris.add(imageUri);
+                GameImageUris.add(imageUri);
+            }
         }
 
         //shuffle to randomise
-        Collections.shuffle(GameImageUrls);
+        Collections.shuffle(GameImageUris);
 
         //initialise scoreboard
         TextView score = findViewById(R.id.Score);
@@ -130,8 +134,8 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
             for (int b = 0; b < numberOfColumns; b++) {
                 ImageView imageView = new ImageView(this);
                 LinearLayout.LayoutParams lpForImages = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
-                lpForImages.height = (this.getResources().getDisplayMetrics().widthPixels)/3;
-                lpForImages.width = (this.getResources().getDisplayMetrics().widthPixels)/3;
+                lpForImages.weight = 1;
+                lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.16);
                 imageView.setLayoutParams(lpForImages);
                 imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                 linearLayout.addView(imageView);
@@ -142,10 +146,10 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
         int i = 0;
         int y = 0;
         int x = 0;
-        while (i < GameImageUrls.size()) {
+        while (i < GameImageUris.size()) {
             LinearLayout ll = (LinearLayout) gameImages.getChildAt(y);
             ImageView emptyImage = (ImageView) ll.getChildAt(x);
-            loadImagesForGame(GameImageUrls.get(i), emptyImage);
+            loadImagesForGame(GameImageUris.get(i), emptyImage);
             i++;
             x++;
             if (x >= numberOfColumns) {
@@ -155,9 +159,9 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
         }
     }
 
-    public void loadImagesForGame(String imageUrl, ImageView iv) {
-        Glide.with(this).load(imageUrl).into(iv);
-        iv.setContentDescription(imageUrl);
+    public void loadImagesForGame(String imageUri, ImageView iv) {
+        iv.setImageBitmap(BitmapFactory.decodeFile(imageUri));
+        iv.setContentDescription(imageUri);
         iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.x));
         iv.setOnClickListener(view -> chooseImage(iv));
     }
@@ -328,6 +332,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     }
 
     public void showCongratulationsPlayer1() {
+        mediaPlayer.stop();
         setUIVisibility();
         LinearLayout winGame1 = findViewById(R.id.Player1WinGame);
         LinearLayout winGame2 = findViewById(R.id.Player2WinGame);
@@ -343,6 +348,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     }
 
     public void showCongratulationsPlayer2() {
+        mediaPlayer.stop();
         setUIVisibility();
         LinearLayout winGame2 = findViewById(R.id.Player2WinGame);
         LinearLayout winGame1 = findViewById(R.id.Player1WinGame);
@@ -358,6 +364,7 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     }
 
     public void showDrawGame() {
+        mediaPlayer.stop();
         setUIVisibility();
         LinearLayout drawnGame = findViewById(R.id.DrawnGame);
         LinearLayout winGame2 = findViewById(R.id.Player2WinGame);
@@ -375,7 +382,6 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
     public void startNewGame() {
         Intent intent = new Intent(this, LoadImagesActivity.class);
         startActivity(intent);
-        mediaPlayer.stop();
     }
 
     //Pause Music
@@ -404,6 +410,17 @@ public class GameActivityDoublePlayer extends AppCompatActivity {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
             mediaPlayer.release();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        FilenameFilter filter = (directory, name) -> name.contains("imageMemoryGame");
+        File[] toBeDeleted = dir.listFiles(filter);
+        for (File a : toBeDeleted) {
+            a.delete();
         }
     }
 }
