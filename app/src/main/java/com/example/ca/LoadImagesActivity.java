@@ -82,7 +82,7 @@ public class LoadImagesActivity extends AppCompatActivity {
             for (int b = 0; b < numberOfColumns && i < numberOfImages; b++) {
                 ImageView imageView = new ImageView(this);
                 LinearLayout.LayoutParams lpForImages = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
-                lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.12);
+                lpForImages.height = (this.getResources().getDisplayMetrics().widthPixels)/4;
                 lpForImages.width = (this.getResources().getDisplayMetrics().widthPixels)/4;
 
                 //set 5dp margin around images
