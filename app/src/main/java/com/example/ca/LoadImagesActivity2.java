@@ -3,17 +3,18 @@ package com.example.ca;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.squareup.picasso.Picasso;
 
@@ -25,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class LoadImagesActivity extends AppCompatActivity {
+public class LoadImagesActivity2 extends AppCompatActivity {
 
     private Elements imagesDownload;
     private Document website;
@@ -34,8 +35,11 @@ public class LoadImagesActivity extends AppCompatActivity {
     private TextView proceedToGame;
     private final Collection<ImageView> selectedImages = new ArrayList<>();
     private boolean buttonPressedAgain = false;
-    int numberOfImages = 20;
-    int numberOfGameImages = 6;
+    int numberOfColumns = 5;
+
+    //changeable variables
+    int numberOfImages = 30;
+    int numberOfGameImages = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,45 +72,74 @@ public class LoadImagesActivity extends AppCompatActivity {
         getUrlWhileScraping.setOnClickListener((view) -> fetchButtonPressedWhileLoadingImages(true));
         getUrlWhileScraping.bringToFront();
 
-        //load placeholder images
-        ConstraintLayout loadImagesViewImages = findViewById(R.id.Images);
-        for (int i = 0; i < loadImagesViewImages.getChildCount(); i++) {
-            Picasso.get().load(R.drawable.x).fit().into((ImageView) loadImagesViewImages.getChildAt(i));
-        }
-
         //scrape website and get images on new thread so main thread can load progress
         new Thread(() -> {
-            try
-            {
+            try {
                 //set up progress bar and status
+                LinearLayout images = findViewById(R.id.Images);
                 downloadProgressBar = findViewById(R.id.DownloadProgressBar);
                 downloadProgressText.setText(getString(R.string.checkingTheWebsite));
+                downloadProgressBar.setMax(numberOfImages);
+
+                for (int a = 0; a < Math.ceil((double) numberOfImages / (double) numberOfColumns); a++) {
+                    LinearLayout linearLayout = new LinearLayout(this);
+                    linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                    LinearLayout.LayoutParams lpForRows = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    linearLayout.setLayoutParams(lpForRows);
+
+                    for (int b = 0; b < numberOfColumns; b++) {
+                        ImageView imageView = new ImageView(this);
+                        LinearLayout.LayoutParams lpForImages = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+                        lpForImages.weight = 1;
+                        lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.14);
+                        imageView.setLayoutParams(lpForImages);
+                        linearLayout.addView(imageView);
+                    }
+                    runOnUiThread(() -> images.addView(linearLayout));
+                }
+
+                //load placeholder images
+                LinearLayout allEmptyImageViews = findViewById(R.id.Images);
+                for (int i = 0; i < allEmptyImageViews.getChildCount(); i++) {
+                    LinearLayout imageRows = (LinearLayout) allEmptyImageViews.getChildAt(i);
+                    for (int j = 0; j < imageRows.getChildCount(); j++) {
+                        ImageView child = (ImageView) imageRows.getChildAt(j);
+                        child.setEnabled(false);
+                    }
+                }
 
                 hideKeyboard();
                 getWebsite();
 
                 //get images from website
                 imagesDownload = website.getElementsByTag("img");
-                int i = 1;
+                int i = 0;
                 int j = 0;
-                while (i <= numberOfImages && !buttonPressedAgain) {
+                int y = 0;
+                int x = 0;
+                while (i < numberOfImages && !buttonPressedAgain) {
                     if (imagesDownload.get(j).attr("src") != null && imagesDownload.get(j).attr("src").contains("http")) {
-                        String a = "imageView" + i;
-                        int emptyImageId = getResources().getIdentifier(a, "id", getPackageName());
-                        ImageView emptyImage = findViewById(emptyImageId);
+                        LinearLayout ll = (LinearLayout) images.getChildAt(y);
+                        ImageView emptyImage = (ImageView) ll.getChildAt(x);
                         insertImages(imagesDownload, i, j, emptyImage);
                         setClickTrackerUsingMainThread(emptyImage);
                         i++;
+                        x++;
+                        if (x >= numberOfColumns) {
+                            y++;
+                            x = 0;
+                        }
                     }
                     j++;
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 runOnUiThread(() -> Toast.makeText(this, "We were unable to extract the images from the entered url. Please enter another url.", Toast.LENGTH_LONG).show());
                 fetchButtonPressedWhileLoadingImages(false);
             }
-        }).start();
+        }).
+
+                start();
+
     }
 
     public void fetchButtonPressedWhileLoadingImages(boolean startProgram) {
@@ -118,7 +151,7 @@ public class LoadImagesActivity extends AppCompatActivity {
         buttonPressedAgain = true;
 
         //redirect to "restart" activity
-        Intent intent = new Intent(this, LoadImagesActivity.class);
+        Intent intent = new Intent(this, LoadImagesActivity2.class);
         intent.putExtra("EnteredUrl", EnteredUrl);
         intent.putExtra("startProgram", startProgram);
         startActivity(intent);
@@ -145,19 +178,19 @@ public class LoadImagesActivity extends AppCompatActivity {
                         clickImage(iv)));
     }
 
-    public void insertImages(final Elements images, final int z, final int y,
-                             final ImageView emptyImageViews) {
+    public void insertImages(Elements images, int i, int j,
+                             ImageView emptyImageViews) {
         runOnUiThread(() -> {
             //set images
-            Picasso.get().load(images.get(y).attr("src")).fit().placeholder(R.drawable.x).into(emptyImageViews);
-            emptyImageViews.setContentDescription(images.get(y).attr("src"));
+            Picasso.get().load(images.get(j).attr("src")).fit().placeholder(R.drawable.x).into(emptyImageViews);
+            emptyImageViews.setContentDescription(images.get(j).attr("src"));
 
             //increment progress bar and progress text
             downloadProgressBar.incrementProgressBy(1);
-            if (z >= numberOfImages) {
-                downloadProgressText.setText(getString(R.string.downloadCompletedImages, numberOfImages));
+            if (i + 1 >= numberOfImages) {
+                downloadProgressText.setText(getString(R.string.downloadCompletedImages, numberOfGameImages));
             } else {
-                downloadProgressText.setText(getString(R.string.downloadingImageProgress, z, numberOfImages));
+                downloadProgressText.setText(getString(R.string.downloadingImageProgress, i + 1, numberOfImages));
             }
         });
     }
@@ -166,7 +199,7 @@ public class LoadImagesActivity extends AppCompatActivity {
         //image not selected yet, <6 images selected
         if (!selectedImages.contains(iv) && selectedImages.size() < numberOfGameImages) {
             selectedImages.add(iv);
-            downloadProgressText.setText(getString(R.string.selectedImages, selectedImages.size()));
+            downloadProgressText.setText(getString(R.string.selectedImages, selectedImages.size(), numberOfGameImages));
             iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.chosen));
 
             //6 images selected
@@ -178,13 +211,13 @@ public class LoadImagesActivity extends AppCompatActivity {
         //image already selected
         else if (selectedImages.contains(iv)) {
             selectedImages.remove(iv);
-            downloadProgressText.setText(getString(R.string.selectedImages, selectedImages.size()));
+            downloadProgressText.setText(getString(R.string.selectedImages, selectedImages.size(), numberOfGameImages));
             iv.setForeground(null);
 
             //image unselected results in <6 images selected
             if (selectedImages.size() < numberOfGameImages) {
                 downloadProgressText.bringToFront();
-                downloadProgressText.setText(getString(R.string.selectedImages, selectedImages.size()));
+                downloadProgressText.setText(getString(R.string.selectedImages, selectedImages.size(), numberOfGameImages));
                 proceedToGame.setOnClickListener(null);
             }
         }
@@ -197,8 +230,9 @@ public class LoadImagesActivity extends AppCompatActivity {
         }
 
         //set image urls in intent
-        Intent intent = new Intent(this, GameActivity.class);
+        Intent intent = new Intent(this, GameActivity2.class);
         intent.putStringArrayListExtra("SelectedImagesUrls", selectedImagesUrls);
+        intent.putExtra("numberOfGameImages", numberOfGameImages);
         startActivity(intent);
     }
 }

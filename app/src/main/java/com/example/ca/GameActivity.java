@@ -1,87 +1,39 @@
 package com.example.ca;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.content.Intent;
-import android.media.AudioAttributes;
-import android.media.MediaPlayer;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class GameActivitySinglePlayer extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity {
     int a = 0;
     int playerScore = 0;
-    private SoundPool soundPool;
-    private int sound1, sound2, sound3;
+    int numberOfGameImages;
     ImageView firstChoice;
-    private MediaPlayer mediaPlayer;
-    private Button pauseButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.gameboardsingle);
-
-        //Instantiate mediaplayer for mario background music
-        //mario medley song mp3 file downloaded from
-        //https://play.nintendo.com/printables/uncategorized/exclusive-download-super-mario-bros-song/
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer = MediaPlayer.create(GameActivitySinglePlayer.this, R.raw.super_mario_medley);
-
-        mediaPlayer.setVolume(0.5f, 0.5f);
-
-        //Loop the music
-        mediaPlayer.setLooping(true);
-
-        //Start playing the music automatically upon launch of activity
-        mediaPlayer.start();
-
-        pauseButton = findViewById(R.id.pauseButtonSingle);
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mediaPlayer.isPlaying()) {
-                    pauseMusic();
-                } else {
-                    resumeMusic();
-                }
-            }
-        });
-
-        //Instantiate soundpool for soundeffects
-        AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                .build();
-        soundPool = new SoundPool.Builder()
-                .setMaxStreams(3)
-                .setAudioAttributes(audioAttributes)
-                .build();
-
-        // Sound effect mp3 files downloaded from www.zapsplat.com
-        sound1 = soundPool.load(this,R.raw.correct, 1);
-        sound2 = soundPool.load(this,R.raw.incorrect, 1);
-        sound3 = soundPool.load(this, R.raw.completion, 1);
+        setContentView(R.layout.gameboard);
 
         //get selected images from LoadImagesActivity explicit intent
         Intent intent = getIntent();
         List<String> ChosenImagesUrls = intent.getStringArrayListExtra("SelectedImagesUrls");
+        numberOfGameImages = intent.getIntExtra("numberOfGameImages",0);
 
         //put urls + duplicate in new list
         List<String> GameImageUrls = new ArrayList<>();
@@ -107,7 +59,7 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
     }
 
     public void loadImagesForGame(String imageUrl, ImageView iv) {
-        Glide.with(this).load(imageUrl).into(iv);
+        Picasso.get().load(imageUrl).fit().into(iv);
         iv.setContentDescription(imageUrl);
         iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.x));
         iv.setOnClickListener(view -> chooseImage(iv));
@@ -130,15 +82,9 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
                     showTick(iv);
                     iv.setOnClickListener(null);
                     int b = scoreUpdate();
-                    if (b == 6) {
+                    if (b == numberOfGameImages) {
                         score.setText(R.string.completedSmiley);
                         GameTimer.stop();
-                        ConstraintLayout scoreConstraint = findViewById(R.id.gameinfoSingle);
-                        scoreConstraint.setVisibility(View.INVISIBLE);
-                        ConstraintLayout btnConstraint = findViewById(R.id.btn_constraint);
-                        btnConstraint.setVisibility(View.INVISIBLE);
-                        ConstraintLayout imageConstraint = findViewById(R.id.images);
-                        imageConstraint.setVisibility(View.INVISIBLE);
                         showCongratulations();
                         images.postDelayed(() -> startNewGame(), 5000);
                     }
@@ -168,18 +114,17 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
 
     public void showTick(ImageView iv) {
         iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.tick));
-        soundPool.play(sound1, 1, 1, 0,0,1);
     }
 
     public void showCross(ImageView iv) {
         iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.cross));
-        soundPool.play(sound2, 1, 1, 0,0,1);
     }
 
     public int scoreUpdate() {
         playerScore++;
         TextView score = findViewById(R.id.Score);
         score.setText(getString(R.string.currentScore, playerScore));
+
         return playerScore;
     }
 
@@ -208,43 +153,12 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
         LinearLayout winGame = findViewById(R.id.WinGame);
         winGame.bringToFront();
         Chronometer countDownToMainMenu = findViewById(R.id.TimeToNewGame);
-        soundPool.play(sound3, 1, 1, 0,0,1);
-        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5500);
+        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5000);
         countDownToMainMenu.start();
     }
 
     public void startNewGame() {
         Intent intent = new Intent(this, LoadImagesActivity.class);
         startActivity(intent);
-        mediaPlayer.stop();
-    }
-
-    //Pause Music
-    public void pauseMusic() {
-        if (mediaPlayer != null) {
-            mediaPlayer.pause();
-            pauseButton.setText(R.string.resume_music);
-        }
-    }
-
-    //Resume Music
-    public void resumeMusic() {
-        if (mediaPlayer != null) {
-            mediaPlayer.start();
-            pauseButton.setText(R.string.pause_music);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (soundPool != null) {
-            soundPool.release();
-            soundPool = null;
-        }
-        if (mediaPlayer != null) {
-            mediaPlayer.pause();
-            mediaPlayer.release();
-        }
     }
 }

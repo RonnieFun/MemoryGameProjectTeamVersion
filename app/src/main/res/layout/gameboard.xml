@@ -10,6 +10,7 @@
         android:id="@+id/WinGame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#FFFFFF"
         android:orientation="vertical"
         tools:layout_editor_absoluteY="146dp">
 
@@ -42,11 +43,10 @@
             android:textColor="#FFA500"
             android:textFontWeight="1000"
             android:textSize="34sp" />
-
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/gameinfoSingle"
+        android:id="@+id/gameinfo"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#FFFFFF"
@@ -95,14 +95,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/gameinfoSingle"
+        app:layout_constraintTop_toBottomOf="@id/gameinfo"
         app:layout_constraintVertical_weight="8">
 
         <ImageView
             android:id="@+id/imageView21"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@id/imageView24"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/imageView22"
@@ -113,7 +112,6 @@
             android:id="@+id/imageView22"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@id/imageView25"
             app:layout_constraintLeft_toRightOf="@id/imageView21"
             app:layout_constraintRight_toLeftOf="@id/imageView23"
@@ -124,7 +122,6 @@
             android:id="@+id/imageView23"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@id/imageView26"
             app:layout_constraintLeft_toRightOf="@id/imageView22"
             app:layout_constraintRight_toRightOf="parent"
@@ -135,7 +132,6 @@
             android:id="@+id/imageView24"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@id/imageView27"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/imageView25"
@@ -146,7 +142,6 @@
             android:id="@+id/imageView25"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@id/imageView28"
             app:layout_constraintLeft_toRightOf="@id/imageView24"
             app:layout_constraintRight_toLeftOf="@id/imageView26"
@@ -157,7 +152,6 @@
             android:id="@+id/imageView26"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@id/imageView29"
             app:layout_constraintLeft_toRightOf="@id/imageView25"
             app:layout_constraintRight_toRightOf="parent"
@@ -168,7 +162,6 @@
             android:id="@+id/imageView27"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@id/imageView30"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/imageView28"
@@ -179,7 +172,6 @@
             android:id="@+id/imageView28"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@id/imageView31"
             app:layout_constraintLeft_toRightOf="@id/imageView27"
             app:layout_constraintRight_toLeftOf="@id/imageView29"
@@ -190,7 +182,6 @@
             android:id="@+id/imageView29"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@id/imageView32"
             app:layout_constraintLeft_toRightOf="@id/imageView28"
             app:layout_constraintRight_toRightOf="parent"
@@ -201,7 +192,6 @@
             android:id="@+id/imageView30"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/imageView31"
@@ -212,7 +202,6 @@
             android:id="@+id/imageView31"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/imageView30"
             app:layout_constraintRight_toLeftOf="@id/imageView32"
@@ -223,30 +212,11 @@
             android:id="@+id/imageView32"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/imageView31"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageView29"
             tools:srcCompat="@tools:sample/avatars" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/btn_constraint"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <Button
-            android:id="@+id/pauseButtonSingle"
-            android:layout_width="147dp"
-            android:layout_height="46dp"
-            android:layout_marginStart="250dp"
-            android:backgroundTint="@color/purple_500"
-            android:text="@string/pause_music"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
