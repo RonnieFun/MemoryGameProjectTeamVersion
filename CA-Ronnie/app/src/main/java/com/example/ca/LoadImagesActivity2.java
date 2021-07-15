@@ -1,25 +1,24 @@
 package com.example.ca;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class LoadImagesActivity extends AppCompatActivity {
+public class LoadImagesActivity2 extends AppCompatActivity {
 
     private Elements elements;
     private Document document;
@@ -44,15 +43,22 @@ public class LoadImagesActivity extends AppCompatActivity {
     private EditText enteredUrl;
     private List<String> srcList = new ArrayList<>();
     private final Collection<ImageView> selectedImages = new ArrayList<>();
+    int numberOfColumns = 4;
+
+    //changeable variables
+    int numberOfImages = 20;
+    int numberOfGameImages = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.loadimages);
+        setContentView(R.layout.loadimages2);
 
         Button getUrl = findViewById(R.id.FetchButton);
         getUrl.setOnClickListener((view) -> GetImagesFromUrl());
+
+        CreateEmptyImageViews();
 
         downloadProgressText = findViewById(R.id.DownloadProgress);
         enteredUrl = findViewById(R.id.EnteredUrl);
@@ -64,7 +70,30 @@ public class LoadImagesActivity extends AppCompatActivity {
         getUrl.bringToFront();
     }
 
-    @SuppressLint("SetTextI18n")
+    public void CreateEmptyImageViews() {
+        for (int a = 0; a < Math.ceil((double) numberOfImages / (double) numberOfColumns); a++) {
+            LinearLayout linearLayout = new LinearLayout(this);
+            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout.LayoutParams lpForRows = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            linearLayout.setLayoutParams(lpForRows);
+
+            for (int b = 0; b < numberOfColumns; b++) {
+                ImageView imageView = new ImageView(this);
+                LinearLayout.LayoutParams lpForImages = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+                lpForImages.weight = 1;
+                lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.14);
+
+                //set 5dp margin around images
+                float margin = 5 * getResources().getDisplayMetrics().density;
+                lpForImages.setMargins((int) margin, (int) margin, (int) margin, (int) margin);
+                imageView.setLayoutParams(lpForImages);
+                imageView.setImageDrawable(getDrawable(R.drawable.x));
+                linearLayout.addView(imageView);
+                setClickTrackerUsingMainThread(imageView);
+            }
+        }
+    }
+
     public void GetImagesFromUrl() {
         //check the user enter url and press fetch while downloading
         if (bkgdThread != null) {
@@ -110,7 +139,6 @@ public class LoadImagesActivity extends AppCompatActivity {
                 String a = "imageView" + i;
                 Bitmap bitmap = null;
                 int emptyImageId = getResources().getIdentifier(a, "id", getPackageName());
-                ImageView emptyImage = findViewById(emptyImageId);
                 try {
                     bitmap = Glide.with(getBaseContext()).asBitmap().load(src).submit().get();
                 } catch (ExecutionException e) {
@@ -121,17 +149,16 @@ public class LoadImagesActivity extends AppCompatActivity {
                 Bitmap finalBitmap = bitmap;
                 runOnUiThread(() -> {
                     //insertImages(imagesDownload, i, j, emptyImage,bitmap);
-                    emptyImage.setImageBitmap(finalBitmap);
-                    emptyImage.setContentDescription(src);
+                    //emptyImage.setImageBitmap(finalBitmap);
+                    //emptyImage.setContentDescription(src);
                     //increment progress bar and progress text
                     downloadProgressBar.incrementProgressBy(1);
                 });
-                if (i >= 20) {
-                    downloadProgressText.setText(R.string.downloadCompleted6Images);
+                if (i >= numberOfImages) {
+                    downloadProgressText.setText(getString(R.string.downloadCompletedXImages, numberOfGameImages));
                 } else {
                     downloadProgressText.setText(getString(R.string.downloadingImageProgress, i));
                 }
-                setClickTrackerUsingMainThread(emptyImage);
                 i++;
             }
         }

@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CA">
         <activity
-            android:name=".LoadImagesActivity"
+            android:name=".LoadImagesActivity2"
             android:theme="@style/Theme.Design.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

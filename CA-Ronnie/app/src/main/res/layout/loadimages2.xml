@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/wholeScreen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:foregroundGravity="center"
+    tools:context=".LoadImagesActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/UrlEntering"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/ImagesScrollView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_weight="1">
+
+        <EditText
+            android:id="@+id/EnteredUrl"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:autofillHints="@string/hint"
+            android:background="@drawable/rectangle_border"
+            android:gravity="bottom"
+            android:hint="@string/hint"
+            android:inputType="text"
+            android:padding="10dp"
+            android:scaleX="0.95"
+            android:textColor="#000000"
+            android:textColorHint="#000000"
+            android:textScaleX="1.05"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_weight="3.75"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/FetchButtons"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.9"
+            tools:ignore="TextFields" />
+
+        <FrameLayout
+            android:id="@+id/FetchButtons"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_weight="1.25"
+            app:layout_constraintLeft_toRightOf="@id/EnteredUrl"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.9">
+
+            <Button
+                android:id="@+id/FetchButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rectangle_border"
+                android:backgroundTint="@color/purple_500"
+                android:scaleX="0.95"
+                android:text="@string/btn_fetch"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textScaleX="1.05"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_weight="1.25"
+                app:layout_constraintLeft_toRightOf="@id/EnteredUrl"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.9" />
+
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:id="@+id/ImagesScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fadeScrollbars="false"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/DownloadProgressBar"
+        app:layout_constraintTop_toBottomOf="@id/UrlEntering"
+        app:layout_constraintVertical_weight="7">
+
+        <LinearLayout
+            android:id="@+id/Images"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/DownloadProgressBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/rectangle_border"
+        android:max="20"
+        android:maxHeight="50dp"
+        android:minHeight="50dp"
+        android:paddingHorizontal="2dp"
+        android:paddingVertical="3dp"
+        android:progressBackgroundTint="@android:color/transparent"
+        android:progressTint="#CCCCCC"
+        android:scaleX="0.75"
+        android:scaleY="0.5"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/DownloadProgressProceedGame"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ImagesScrollView"
+        app:layout_constraintVertical_weight="1.25" />
+
+    <FrameLayout
+        android:id="@+id/DownloadProgressProceedGame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/DownloadProgressBar"
+        app:layout_constraintVertical_weight="0.75">
+
+        <TextView
+            android:id="@+id/DownloadProgress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:gravity="top|center_horizontal"
+            android:textColor="#000000"
+            app:layout_constraintVertical_weight="0.75" />
+
+        <TextView
+            android:id="@+id/ProceedToDoublePlayerGame"
+            android:layout_width="190dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal|end"
+            android:background="@color/purple_500"
+            android:gravity="center_horizontal"
+            android:text="@string/double_player"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            app:layout_constraintVertical_weight="0.75" />
+
+        <TextView
+            android:id="@+id/ProceedToSinglePlayerGame"
+            android:layout_width="190dp"
+            android:layout_height="match_parent"
+            android:background="@color/purple_500"
+            android:gravity="center_horizontal"
+            android:text="@string/single_player"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="invisible"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            app:layout_constraintVertical_weight="0.75" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

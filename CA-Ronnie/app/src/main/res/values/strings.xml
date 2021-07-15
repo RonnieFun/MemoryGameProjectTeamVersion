@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CA</string>
     <string name="awaitingUrlInput">Awaiting url input</string>
-    <string name="downloadCompleted6Images">Download completed. Please select 6 images</string>
+    <string name="downloadCompletedXImages">Download completed. Please select %1$d images</string>
     <string name="downloadingImageProgress">\"Downloading images %1$d of 20 \"</string>
     <string name="currentScore">Current score:\n%1$d of 6 matches</string>
     <string name="currentScoreP1">Current score for P1:\n%1$d of 4 matches</string>
