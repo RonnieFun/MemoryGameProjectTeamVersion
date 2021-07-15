@@ -1,10 +1,12 @@
 package com.example.ca;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.bumptech.glide.Glide;
-
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,7 +86,7 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
 
         //get selected images from LoadImagesActivity explicit intent
         Intent intent = getIntent();
-        List<String> ChosenImagesUrls = intent.getStringArrayListExtra("SelectedImagesUrls");
+        List<String> ChosenImagesUris = intent.getStringArrayListExtra("SelectedImagesUris");
         numberOfGameImages = intent.getIntExtra("numberOfGameImages", 0);
         numberOfRows = (int) Math.ceil((double) numberOfGameImages * 2 / (double) numberOfColumns);
         LinearLayout winGame = findViewById(R.id.WinGame);
@@ -92,14 +94,14 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
 
 
         //put urls + duplicate in new list
-        List<String> GameImageUrls = new ArrayList<>();
-        if (ChosenImagesUrls != null) {
-            GameImageUrls.addAll(ChosenImagesUrls);
-            GameImageUrls.addAll(ChosenImagesUrls);
+        List<String> GameImageUris = new ArrayList<>();
+        for (String imageUris: ChosenImagesUris) {
+            GameImageUris.add(imageUris);
+            GameImageUris.add(imageUris);
         }
 
         //shuffle to randomise
-        Collections.shuffle(GameImageUrls);
+        Collections.shuffle(GameImageUris);
 
         //initialise scoreboard
         TextView score = findViewById(R.id.Score);
@@ -118,8 +120,8 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
                 for (int b = 0; b < numberOfColumns; b++) {
                     ImageView imageView = new ImageView(this);
                     LinearLayout.LayoutParams lpForImages = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
-                    lpForImages.height = (this.getResources().getDisplayMetrics().widthPixels)/3;
-                    lpForImages.width = (this.getResources().getDisplayMetrics().widthPixels)/3;
+                    lpForImages.weight = 1;
+                    lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.16);
                     imageView.setLayoutParams(lpForImages);
                     imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                     linearLayout.addView(imageView);
@@ -130,10 +132,10 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
             int i = 0;
             int y = 0;
             int x = 0;
-            while (i < GameImageUrls.size()) {
+            while (i < GameImageUris.size()) {
                 LinearLayout ll = (LinearLayout) gameImages.getChildAt(y);
                 ImageView emptyImage = (ImageView) ll.getChildAt(x);
-                loadImagesForGame(GameImageUrls.get(i), emptyImage);
+                loadImagesForGame(GameImageUris.get(i), emptyImage);
                 i++;
                 x++;
                 if (x >= numberOfColumns) {
@@ -144,10 +146,10 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
         }
     }
 
-    public void loadImagesForGame(String imageUrl, ImageView iv) {
-        Glide.with(this).load(imageUrl).into(iv);
-        iv.setContentDescription(imageUrl);
+    public void loadImagesForGame(String imageUri, ImageView iv) {
+        iv.setImageBitmap(BitmapFactory.decodeFile(imageUri));
         iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.x));
+        iv.setContentDescription(imageUri);
         iv.setOnClickListener(view -> chooseImage(iv));
     }
 
@@ -289,6 +291,23 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
             mediaPlayer.release();
+        }
+        File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        FilenameFilter filter = (directory, name) -> name.contains("imageMemoryGame");
+        File[] toBeDeleted = dir.listFiles(filter);
+        for (File a: toBeDeleted) {
+            a.delete();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        File dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        FilenameFilter filter = (directory, name) -> name.contains("imageMemoryGame");
+        File[] toBeDeleted = dir.listFiles(filter);
+        for (File a : toBeDeleted) {
+            a.delete();
         }
     }
 }

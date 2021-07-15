@@ -3,7 +3,9 @@ package com.example.ca;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -13,22 +15,25 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
-
-import com.bumptech.glide.Glide;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class LoadImagesActivity extends AppCompatActivity {
 
@@ -43,6 +48,7 @@ public class LoadImagesActivity extends AppCompatActivity {
     private final Collection<ImageView> selectedImages = new ArrayList<>();
     int numberOfColumns = 4;
     int numberOfRows;
+    File imgDir;
 
     //changeable variables
     int numberOfImages = 20;
@@ -67,6 +73,8 @@ public class LoadImagesActivity extends AppCompatActivity {
         proceedToDoubleGame = findViewById(R.id.ProceedToDoublePlayerGame);
         allImages = findViewById(R.id.AllImages);
         numberOfRows = (int) Math.ceil((double) numberOfImages / (double) numberOfColumns);
+        downloadProgressText.setText(R.string.awaitingUrlInput);
+        imgDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         getUrl.bringToFront();
         createEmptyImageViews();
     }
@@ -82,8 +90,8 @@ public class LoadImagesActivity extends AppCompatActivity {
             for (int b = 0; b < numberOfColumns && i < numberOfImages; b++) {
                 ImageView imageView = new ImageView(this);
                 LinearLayout.LayoutParams lpForImages = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
-                lpForImages.height = (this.getResources().getDisplayMetrics().widthPixels)/4;
-                lpForImages.width = (this.getResources().getDisplayMetrics().widthPixels)/4;
+                lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.12);
+                lpForImages.width = (this.getResources().getDisplayMetrics().widthPixels) / 4;
 
                 //set 5dp margin around images
                 //float margin = 5 * getResources().getDisplayMetrics().density;
@@ -113,7 +121,7 @@ public class LoadImagesActivity extends AppCompatActivity {
                 LinearLayout linearLayout = (LinearLayout) allImages.getChildAt(a);
                 for (int b = 0; b < numberOfColumns; b++) {
                     ImageView imageView = (ImageView) linearLayout.getChildAt(b);
-                    Glide.with(this).load(R.drawable.x).into(imageView);
+                    imageView.setImageDrawable(getDrawable(R.drawable.x));
                     imageView.setForeground(null);
                 }
             }
@@ -141,46 +149,52 @@ public class LoadImagesActivity extends AppCompatActivity {
         int x = 0;
         Bitmap bitmap = null;
 
-        if (srcList.size() > 0) {
-            for (String src : srcList) {
-                while (y < numberOfRows) {
-                    LinearLayout imageRows = (LinearLayout) allImages.getChildAt(y);
-                    while (x < numberOfColumns) {
-                        if (backgroundThread.isInterrupted()) {
-                            return;
+        try {
+            if (srcList.size() > 0) {
+                for (String src : srcList) {
+                    while (y < numberOfRows) {
+                        File destFile = new File(imgDir, "imageMemoryGame" + i+".bmp");
+                        LinearLayout imageRows = (LinearLayout) allImages.getChildAt(y);
+                        while (x < numberOfColumns) {
+                            if (backgroundThread.isInterrupted()) {
+                                return;
+                            }
+                            ImageView emptyImageView = (ImageView) imageRows.getChildAt(x);
+                            Bitmap finalBitmap = downloadImage(destFile, src);
+                            runOnUiThread(() -> {
+                                emptyImageView.setImageBitmap(finalBitmap);
+                                emptyImageView.setContentDescription(destFile.getAbsolutePath());
+                                downloadProgressBar.incrementProgressBy(1);
+                            });
+                            if (i >= numberOfImages - 1) {
+                                downloadProgressText.setText(getString(R.string.downloadCompletedXImages, numberOfGameImages));
+                            } else {
+                                downloadProgressText.setText(getString(R.string.downloadingImageProgress, i + 1, numberOfImages));
+                            }
+                            x++;
+                            if (x >= numberOfColumns) {
+                                y++;
+                                x = 0;
+                            }
+                            break;
                         }
-                        ImageView emptyImageView = (ImageView) imageRows.getChildAt(x);
-                        try {
-                            bitmap = Glide.with(getBaseContext()).asBitmap().load(src).submit().get();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Bitmap finalBitmap = bitmap;
-                        runOnUiThread(() -> {
-                            emptyImageView.setImageBitmap(finalBitmap);
-                            emptyImageView.setContentDescription(src);
-                            downloadProgressBar.incrementProgressBy(1);
-                        });
-                        if (i >= numberOfImages - 1) {
-                            downloadProgressText.setText(getString(R.string.downloadCompletedXImages, numberOfGameImages));
-                        } else {
-                            downloadProgressText.setText(getString(R.string.downloadingImageProgress, i + 1, numberOfImages));
-                        }
-                        x++;
-                        if (x >= numberOfColumns) {
-                            y++;
-                            x = 0;
-                        }
+                        i++;
                         break;
                     }
-                    i++;
-                    break;
                 }
+                setAllImagesClickable();
             }
+            else {
+                runOnUiThread(() -> Toast.makeText(this, getString(R.string.unableToExtractImages), Toast.LENGTH_LONG).show());
+                Intent intent = new Intent(this, LoadImagesActivity.class);
+                startActivity(intent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            runOnUiThread(() -> Toast.makeText(this, getString(R.string.unableToExtractImages), Toast.LENGTH_LONG).show());
+            Intent intent = new Intent(this, LoadImagesActivity.class);
+            startActivity(intent);
         }
-        setAllImagesClickable();
     }
 
     public void setAllImagesClickable() {
@@ -200,13 +214,27 @@ public class LoadImagesActivity extends AppCompatActivity {
         imm.hideSoftInputFromWindow(findViewById(R.id.EnteredUrl).getWindowToken(), 0);
     }
 
+    public Bitmap downloadImage(File destFile, String src) throws IOException {
+        URL url = new URL(src);
+        URLConnection conn = url.openConnection();
+        InputStream in = conn.getInputStream();
+        FileOutputStream out = new FileOutputStream(destFile);
+
+        byte[] buf = new byte[1024];
+        int bytesRead = -1;
+        while ((bytesRead = in.read(buf)) != -1) {
+            out.write(buf,0,bytesRead);
+        }
+        return BitmapFactory.decodeFile(destFile.getAbsolutePath());
+    }
+
     public void parseUrl() {
         String EnteredUrl = enteredUrl.getText().toString();
-        Document document;
+        Document document = null;
         Elements elements;
         srcList.clear();
+        int index = 0;
         try {
-            int index = 0;
             document = Jsoup.connect(EnteredUrl).get();
             elements = document.getElementsByTag("img");
             for (Element element : elements) {
@@ -220,8 +248,11 @@ public class LoadImagesActivity extends AppCompatActivity {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            runOnUiThread(() -> Toast.makeText(this, getString(R.string.unableToExtractImages), Toast.LENGTH_LONG).show());
+            Intent intent = new Intent(this, LoadImagesActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -261,27 +292,27 @@ public class LoadImagesActivity extends AppCompatActivity {
     }
 
     public void goToSingleGame(Collection<ImageView> selectedImages) {
-        ArrayList<String> selectedImagesUrls = new ArrayList<>();
+        ArrayList<String> selectedImagesUris = new ArrayList<>();
         for (ImageView image : selectedImages) {
-            selectedImagesUrls.add((String) image.getContentDescription());
+            selectedImagesUris.add((String) image.getContentDescription());
         }
 
         //set image urls in intent
         Intent intent = new Intent(this, GameActivitySinglePlayer.class);
-        intent.putStringArrayListExtra("SelectedImagesUrls", selectedImagesUrls);
+        intent.putStringArrayListExtra("SelectedImagesUris", selectedImagesUris);
         intent.putExtra("numberOfGameImages", numberOfGameImages);
         startActivity(intent);
     }
 
     public void goToDoubleGame(Collection<ImageView> selectedImages) {
-        ArrayList<String> selectedImagesUrls = new ArrayList<>();
+        ArrayList<String> selectedImagesUris = new ArrayList<>();
         for (ImageView image : selectedImages) {
-            selectedImagesUrls.add((String) image.getContentDescription());
+            selectedImagesUris.add((String) image.getContentDescription());
         }
 
         //set image urls in intent
         Intent intent = new Intent(this, GameActivityDoublePlayer.class);
-        intent.putStringArrayListExtra("SelectedImagesUrls2", selectedImagesUrls);
+        intent.putStringArrayListExtra("SelectedImagesUris2", selectedImagesUris);
         intent.putExtra("numberOfGameImages", numberOfGameImages);
         startActivity(intent);
     }
