@@ -1,9 +1,5 @@
 package com.example.ca;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
@@ -11,14 +7,18 @@ import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +27,9 @@ import java.util.List;
 public class GameActivitySinglePlayer extends AppCompatActivity {
     int a = 0;
     int playerScore = 0;
+    int numberOfColumns = 3;
+    int numberOfGameImages;
+    int numberOfRows;
     private SoundPool soundPool;
     private int sound1, sound2, sound3;
     ImageView firstChoice;
@@ -75,13 +78,18 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
                 .build();
 
         // Sound effect mp3 files downloaded from www.zapsplat.com
-        sound1 = soundPool.load(this,R.raw.correct, 1);
-        sound2 = soundPool.load(this,R.raw.incorrect, 1);
+        sound1 = soundPool.load(this, R.raw.correct, 1);
+        sound2 = soundPool.load(this, R.raw.incorrect, 1);
         sound3 = soundPool.load(this, R.raw.completion, 1);
 
         //get selected images from LoadImagesActivity explicit intent
         Intent intent = getIntent();
         List<String> ChosenImagesUrls = intent.getStringArrayListExtra("SelectedImagesUrls");
+        numberOfGameImages = intent.getIntExtra("numberOfGameImages", 0);
+        numberOfRows = (int) Math.ceil((double) numberOfGameImages * 2 / (double) numberOfColumns);
+        LinearLayout winGame = findViewById(R.id.WinGame);
+        winGame.setVisibility(View.INVISIBLE);
+
 
         //put urls + duplicate in new list
         List<String> GameImageUrls = new ArrayList<>();
@@ -95,14 +103,44 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
 
         //initialise scoreboard
         TextView score = findViewById(R.id.Score);
-        score.setText(getString(R.string.currentScore, 0));
+        score.setText(getString(R.string.currentScore, 0, numberOfGameImages));
 
         //load images into game
-        for (int i = 21; i <= 32; i++) {
-            String a = "imageView" + i;
-            int emptyImageId = getResources().getIdentifier(a, "id", getPackageName());
-            ImageView emptyImage = findViewById(emptyImageId);
-            loadImagesForGame(GameImageUrls.get(i - 21), emptyImage);
+        {
+            LinearLayout gameImages = findViewById(R.id.GameImages);
+
+            for (int a = 0; a < numberOfRows; a++) {
+                LinearLayout linearLayout = new LinearLayout(this);
+                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams lpForRows = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                linearLayout.setLayoutParams(lpForRows);
+
+                for (int b = 0; b < numberOfColumns; b++) {
+                    ImageView imageView = new ImageView(this);
+                    LinearLayout.LayoutParams lpForImages = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
+                    lpForImages.weight = 1;
+                    lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.18);
+                    imageView.setLayoutParams(lpForImages);
+                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                    linearLayout.addView(imageView);
+                }
+                runOnUiThread(() -> gameImages.addView(linearLayout));
+            }
+
+            int i = 0;
+            int y = 0;
+            int x = 0;
+            while (i < GameImageUrls.size()) {
+                LinearLayout ll = (LinearLayout) gameImages.getChildAt(y);
+                ImageView emptyImage = (ImageView) ll.getChildAt(x);
+                loadImagesForGame(GameImageUrls.get(i), emptyImage);
+                i++;
+                x++;
+                if (x >= numberOfColumns) {
+                    y++;
+                    x = 0;
+                }
+            }
         }
     }
 
@@ -115,7 +153,7 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
 
     public void chooseImage(ImageView iv) {
         Chronometer GameTimer = findViewById(R.id.TimeElapsed);
-        ConstraintLayout images = findViewById(R.id.images);
+        LinearLayout images = findViewById(R.id.GameImages);
         TextView score = findViewById(R.id.Score);
         {
             if (firstChoice == null) {
@@ -130,17 +168,11 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
                     showTick(iv);
                     iv.setOnClickListener(null);
                     int b = scoreUpdate();
-                    if (b == 6) {
+                    if (b == numberOfGameImages) {
                         score.setText(R.string.completedSmiley);
                         GameTimer.stop();
-                        ConstraintLayout scoreConstraint = findViewById(R.id.gameinfoSingle);
-                        scoreConstraint.setVisibility(View.INVISIBLE);
-                        ConstraintLayout btnConstraint = findViewById(R.id.btn_constraint);
-                        btnConstraint.setVisibility(View.INVISIBLE);
-                        ConstraintLayout imageConstraint = findViewById(R.id.images);
-                        imageConstraint.setVisibility(View.INVISIBLE);
-                        showCongratulations();
-                        images.postDelayed(() -> startNewGame(), 5000);
+                        images.postDelayed(() -> showCongratulations(), 500);
+                        images.postDelayed(() -> startNewGame(), 6000);
                     }
 
                 } else {
@@ -168,48 +200,60 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
 
     public void showTick(ImageView iv) {
         iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.tick));
-        soundPool.play(sound1, 1, 1, 0,0,1);
+        soundPool.play(sound1, 1, 1, 0, 0, 1);
     }
 
     public void showCross(ImageView iv) {
         iv.setForeground(AppCompatResources.getDrawable(this, R.drawable.cross));
-        soundPool.play(sound2, 1, 1, 0,0,1);
+        soundPool.play(sound2, 1, 1, 0, 0, 1);
     }
 
     public int scoreUpdate() {
         playerScore++;
         TextView score = findViewById(R.id.Score);
-        score.setText(getString(R.string.currentScore, playerScore));
+        score.setText(getString(R.string.currentScore, playerScore, numberOfGameImages));
         return playerScore;
     }
 
     //disable while showing wrong pictures
     public void disableImageSelection() {
-        ConstraintLayout images = findViewById(R.id.images);
-        for (int i = 0; i < images.getChildCount(); i++) {
-            View child = images.getChildAt(i);
-            child.setEnabled(false);
+        LinearLayout allGameImages = findViewById(R.id.GameImages);
+        for (int i = 0; i < allGameImages.getChildCount(); i++) {
+            LinearLayout imageRows = (LinearLayout) allGameImages.getChildAt(i);
+            for (int j = 0; j < imageRows.getChildCount(); j++) {
+                ImageView child = (ImageView) imageRows.getChildAt(j);
+                child.setEnabled(false);
+            }
         }
     }
 
     //enable after showing wrong pictures
     public void enableImageSelection(ImageView a, ImageView b) {
-        ConstraintLayout images = findViewById(R.id.images);
-        for (int i = 0; i < images.getChildCount(); i++) {
-            View child = images.getChildAt(i);
-            if (child.getForeground() != AppCompatResources.getDrawable(this, R.drawable.tick))
+        LinearLayout allGameImages = findViewById(R.id.GameImages);
+        for (int i = 0; i < allGameImages.getChildCount(); i++) {
+            LinearLayout imageRows = (LinearLayout) allGameImages.getChildAt(i);
+            for (int j = 0; j < imageRows.getChildCount(); j++) {
+                ImageView child = (ImageView) imageRows.getChildAt(j);
                 child.setEnabled(true);
+            }
+            showX(a);
+            showX(b);
         }
-        showX(a);
-        showX(b);
     }
 
     public void showCongratulations() {
+        ConstraintLayout scoreConstraint = findViewById(R.id.gameinfoSingle);
+        scoreConstraint.setVisibility(View.INVISIBLE);
+        ConstraintLayout btnConstraint = findViewById(R.id.btn_constraint);
+        btnConstraint.setVisibility(View.INVISIBLE);
+        LinearLayout images = findViewById(R.id.GameImages);
+        images.setVisibility(View.INVISIBLE);
         LinearLayout winGame = findViewById(R.id.WinGame);
+        winGame.setVisibility(View.VISIBLE);
         winGame.bringToFront();
         Chronometer countDownToMainMenu = findViewById(R.id.TimeToNewGame);
-        soundPool.play(sound3, 1, 1, 0,0,1);
-        countDownToMainMenu.setBase(SystemClock.elapsedRealtime()+5500);
+        soundPool.play(sound3, 1, 1, 0, 0, 1);
+        countDownToMainMenu.setBase(SystemClock.elapsedRealtime() + 5500);
         countDownToMainMenu.start();
     }
 
