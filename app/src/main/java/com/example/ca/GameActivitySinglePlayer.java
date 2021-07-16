@@ -41,11 +41,11 @@ public class GameActivitySinglePlayer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gameboardsingle);
 
-        //Instantiate mediaplayer for Canon in D background music
-        //Canon in D song mp3 file downloaded from
-        //http://down1.5156edu.com/showzipdown.php?id=70229
+        //Instantiate mediaplayer for mario medley music
+        //Mario medley mp3 file downloaded from
+        //https://play.nintendo.com/printables/uncategorized/exclusive-download-super-mario-bros-song/
         mediaPlayer = new MediaPlayer();
-        mediaPlayer = MediaPlayer.create(GameActivitySinglePlayer.this, R.raw.softmusic);
+        mediaPlayer = MediaPlayer.create(GameActivitySinglePlayer.this, R.raw.super_mario_medley);
 
         mediaPlayer.setVolume(0.5f, 0.5f);
 
