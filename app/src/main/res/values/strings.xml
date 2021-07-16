@@ -17,4 +17,5 @@
     <string name="hint">Enter a url</string>
     <string name="checkingWebsite">Checking the website...</string>
     <string name="selectedImages">%1$d of %2$d images selected</string>
+    <string name="toast_msg">No images found. Please enter another url.</string>
 </resources>
