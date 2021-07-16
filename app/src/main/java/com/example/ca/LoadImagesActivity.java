@@ -51,7 +51,7 @@ public class LoadImagesActivity extends AppCompatActivity {
     int numberOfRows;
 
     //changeable variables
-    int numberOfImages = 20;
+    int numberOfImages = 30;
     int numberOfGameImages = 6;
 
     @Override
@@ -123,19 +123,19 @@ public class LoadImagesActivity extends AppCompatActivity {
             downloadProgressText.setVisibility(View.VISIBLE);
             downloadProgressText.setText(R.string.checkingWebsite);
             selectedImages.clear();
-            int i = 0;
-            for (int a = 0; a < numberOfRows; a++) {
-                LinearLayout linearLayout = (LinearLayout) allImages.getChildAt(a);
-                for (int b = 0; b < numberOfColumns; b++) {
-                    while (i<numberOfImages) {
+                int i = 0;
+                for (int a = 0; a < numberOfRows; a++) {
+                    LinearLayout linearLayout = (LinearLayout) allImages.getChildAt(a);
+                    for (int b = 0; b < numberOfColumns && i < numberOfImages; b++) {
                         ImageView imageView = (ImageView) linearLayout.getChildAt(b);
                         Glide.with(this).load(R.drawable.x).into(imageView);
                         imageView.setForeground(null);
                         i++;
                     }
                 }
-            }
+
         }
+
         downloadProgressBar.setVisibility(View.VISIBLE);
         backgroundThread = new Thread() {
             @Override
@@ -147,7 +147,7 @@ public class LoadImagesActivity extends AppCompatActivity {
                 //download data from url
                 if (backgroundThread.isInterrupted()) {
                     flag = false;
-                    return;
+                    //    return;
                 }
                 try {
                     parseUrl();
