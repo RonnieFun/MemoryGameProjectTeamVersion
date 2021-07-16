@@ -44,6 +44,7 @@ public class LoadImagesActivity extends AppCompatActivity {
     private TextView proceedToDoubleGame;
     private LinearLayout allImages;
     private EditText enteredUrl;
+    private boolean flag = true;
     private final List<String> srcList = new ArrayList<>();
     private final Collection<ImageView> selectedImages = new ArrayList<>();
     int numberOfColumns = 4;
@@ -108,6 +109,9 @@ public class LoadImagesActivity extends AppCompatActivity {
     }
 
     public void getImagesFromUrl() {
+        Button getUrl = findViewById(R.id.FetchButton);
+        getUrl.setEnabled(false);
+        getUrl.postDelayed(() -> getUrl.setEnabled(true), 1000);
         final boolean[] errorOrNot = {false};
         //check the user enter url and press fetch while downloading
         if (backgroundThread != null) {
@@ -137,14 +141,17 @@ public class LoadImagesActivity extends AppCompatActivity {
                 downloadProgressText.setText(R.string.checkingWebsite);
                 hideKeyboard();
                 //download data from url
+                if (backgroundThread.isInterrupted()) {
+                    flag = false;
+                    return;
+                }
                 try {
                     parseUrl();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     runOnUiThread(() -> {
                         setAllImagesUnclickable();
                         selectedImages.clear();
-                        Toast toast = Toast.makeText(getBaseContext(), "No images found. Please enter another url.", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(getBaseContext(), getString(R.string.toast_msg), Toast.LENGTH_LONG);
                         TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
                         toastMessage.setTextColor(Color.RED);
                         toast.show();
@@ -153,8 +160,8 @@ public class LoadImagesActivity extends AppCompatActivity {
                     errorOrNot[0] = true;
                 }
                 if (errorOrNot[0] == false)
-                //bind data in UI
-                bindDataInUI();
+                    //bind data in UI
+                    bindDataInUI();
             }
         };
         backgroundThread.start();
@@ -168,6 +175,9 @@ public class LoadImagesActivity extends AppCompatActivity {
 
         if (srcList.size() > 0) {
             for (String src : srcList) {
+                if (flag == false) {
+                    break;
+                }
                 while (y < numberOfRows) {
                     LinearLayout imageRows = (LinearLayout) allImages.getChildAt(y);
                     while (x < numberOfColumns) {
@@ -242,21 +252,24 @@ public class LoadImagesActivity extends AppCompatActivity {
         Document document;
         Elements elements;
         srcList.clear();
-/*        try {*/
-            int index = 0;
-            document = Jsoup.connect(EnteredUrl).get();
-            elements = document.getElementsByTag("img");
-            for (Element element : elements) {
-                String imgSrc = element.attr("src");
-                if (imgSrc.contains(".jpg") || imgSrc.contains(".png")) {
-                    if (index >= numberOfImages) {
-                        break;
-                    } else {
-                        srcList.add(imgSrc);
-                        index++;
-                    }
+        /*        try {*/
+        int index = 0;
+        document = Jsoup.connect(EnteredUrl).get();
+        elements = document.getElementsByTag("img");
+        if (elements.size() < numberOfImages) {
+            throw new IOException();
+        }
+        for (Element element : elements) {
+            String imgSrc = element.attr("src");
+            if (imgSrc.contains(".jpg") || imgSrc.contains(".png")) {
+                if (index >= numberOfImages) {
+                    break;
+                } else {
+                    srcList.add(imgSrc);
+                    index++;
                 }
             }
+        }
 /*        } catch (Exception e) {
             runOnUiThread(() -> {
                 Toast toast = Toast.makeText(this, "No images found. Please enter another url.", Toast.LENGTH_LONG);
