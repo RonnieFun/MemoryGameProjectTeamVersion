@@ -108,6 +108,7 @@ public class LoadImagesActivity extends AppCompatActivity {
     }
 
     public void getImagesFromUrl() {
+        final boolean[] errorOrNot = {false};
         //check the user enter url and press fetch while downloading
         if (backgroundThread != null) {
             backgroundThread.interrupt();
@@ -136,7 +137,22 @@ public class LoadImagesActivity extends AppCompatActivity {
                 downloadProgressText.setText(R.string.checkingWebsite);
                 hideKeyboard();
                 //download data from url
-                parseUrl();
+                try {
+                    parseUrl();
+                }
+                catch (Exception e) {
+                    runOnUiThread(() -> {
+                        setAllImagesUnclickable();
+                        selectedImages.clear();
+                        Toast toast = Toast.makeText(getBaseContext(), "No images found. Please enter another url.", Toast.LENGTH_LONG);
+                        TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
+                        toastMessage.setTextColor(Color.RED);
+                        toast.show();
+                        e.printStackTrace();
+                    });
+                    errorOrNot[0] = true;
+                }
+                if (errorOrNot[0] == false)
                 //bind data in UI
                 bindDataInUI();
             }
@@ -204,17 +220,29 @@ public class LoadImagesActivity extends AppCompatActivity {
         }
     }
 
+    public void setAllImagesUnclickable() {
+        int i = 0;
+        for (int a = 0; a < numberOfRows; a++) {
+            LinearLayout linearLayout = (LinearLayout) allImages.getChildAt(a);
+            for (int b = 0; b < numberOfColumns && i < numberOfImages; b++) {
+                ImageView imageView = (ImageView) linearLayout.getChildAt(b);
+                runOnUiThread(() -> imageView.setOnClickListener(null));
+                i++;
+            }
+        }
+    }
+
     public void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(findViewById(R.id.EnteredUrl).getWindowToken(), 0);
     }
 
-    public void parseUrl() {
+    public void parseUrl() throws IOException {
         String EnteredUrl = enteredUrl.getText().toString();
         Document document;
         Elements elements;
         srcList.clear();
-        try {
+/*        try {*/
             int index = 0;
             document = Jsoup.connect(EnteredUrl).get();
             elements = document.getElementsByTag("img");
@@ -229,7 +257,7 @@ public class LoadImagesActivity extends AppCompatActivity {
                     }
                 }
             }
-        } catch (Exception e) {
+/*        } catch (Exception e) {
             runOnUiThread(() -> {
                 Toast toast = Toast.makeText(this, "No images found. Please enter another url.", Toast.LENGTH_LONG);
                 TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
@@ -239,7 +267,7 @@ public class LoadImagesActivity extends AppCompatActivity {
 
                 setUpView();
             });
-        }
+        }*/
     }
 
     public void clickImage(ImageView iv) {
