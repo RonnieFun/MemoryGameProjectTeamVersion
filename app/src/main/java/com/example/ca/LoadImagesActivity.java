@@ -123,12 +123,16 @@ public class LoadImagesActivity extends AppCompatActivity {
             downloadProgressText.setVisibility(View.VISIBLE);
             downloadProgressText.setText(R.string.checkingWebsite);
             selectedImages.clear();
+            int i = 0;
             for (int a = 0; a < numberOfRows; a++) {
                 LinearLayout linearLayout = (LinearLayout) allImages.getChildAt(a);
                 for (int b = 0; b < numberOfColumns; b++) {
-                    ImageView imageView = (ImageView) linearLayout.getChildAt(b);
-                    Glide.with(this).load(R.drawable.x).into(imageView);
-                    imageView.setForeground(null);
+                    while (i<numberOfImages) {
+                        ImageView imageView = (ImageView) linearLayout.getChildAt(b);
+                        Glide.with(this).load(R.drawable.x).into(imageView);
+                        imageView.setForeground(null);
+                        i++;
+                    }
                 }
             }
         }
