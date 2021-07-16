@@ -51,7 +51,7 @@ public class LoadImagesActivity extends AppCompatActivity {
     int numberOfRows;
 
     //changeable variables
-    int numberOfImages = 30;
+    int numberOfImages = 20;
     int numberOfGameImages = 6;
 
     @Override
