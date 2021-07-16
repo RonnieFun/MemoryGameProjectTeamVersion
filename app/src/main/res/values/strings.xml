@@ -17,5 +17,4 @@
     <string name="hint">Enter a url</string>
     <string name="checkingWebsite">Checking the website...</string>
     <string name="selectedImages">%1$d of %2$d images selected</string>
-    <string name="unableToExtractImages">We were unable to extract the images from the entered url. Please enter another url.</string>
 </resources>
