@@ -3,6 +3,7 @@ package com.example.ca;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -23,8 +26,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,6 +57,10 @@ public class LoadImagesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        setUpView();
+    }
+
+    public void setUpView() {
         setContentView(R.layout.loadimages);
 
         Button getUrl = findViewById(R.id.FetchButton);
@@ -83,7 +92,7 @@ public class LoadImagesActivity extends AppCompatActivity {
                 ImageView imageView = new ImageView(this);
                 LinearLayout.LayoutParams lpForImages = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT);
                 lpForImages.height = (int) ((this.getResources().getDisplayMetrics().heightPixels) * 0.12);
-                lpForImages.width = (this.getResources().getDisplayMetrics().widthPixels)/4;
+                lpForImages.width = (this.getResources().getDisplayMetrics().widthPixels) / 4;
 
                 //set 5dp margin around images
                 //float margin = 5 * getResources().getDisplayMetrics().density;
@@ -220,8 +229,16 @@ public class LoadImagesActivity extends AppCompatActivity {
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            runOnUiThread(() -> {
+                Toast toast = Toast.makeText(this, "No images found. Please enter another url.", Toast.LENGTH_LONG);
+                TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
+                toastMessage.setTextColor(Color.RED);
+                toast.show();
+                e.printStackTrace();
+
+                setUpView();
+            });
         }
     }
 
