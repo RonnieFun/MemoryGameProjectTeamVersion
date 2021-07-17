@@ -260,12 +260,9 @@ public class LoadImagesActivity extends AppCompatActivity {
         int index = 0;
         document = Jsoup.connect(EnteredUrl).get();
         elements = document.getElementsByTag("img");
-        if (elements.size() < numberOfImages) {
-            throw new IOException();
-        }
         for (Element element : elements) {
             String imgSrc = element.attr("src");
-            if (imgSrc.contains(".jpg") || imgSrc.contains(".png")) {
+            if (imgSrc.contains("http") && (imgSrc.contains(".jpg") || imgSrc.contains(".png"))) {
                 if (index >= numberOfImages) {
                     break;
                 } else {
@@ -273,6 +270,9 @@ public class LoadImagesActivity extends AppCompatActivity {
                     index++;
                 }
             }
+        }
+        if (srcList.size() < numberOfImages) {
+            throw new IOException();
         }
 /*        } catch (Exception e) {
             runOnUiThread(() -> {
